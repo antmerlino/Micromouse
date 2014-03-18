@@ -25,10 +25,14 @@ void get_current_time(sys_time_handle time_handle) {
 	time_handle->uSec = curr_time.uSec;
 }
 
-uint64_t get_time_lapsed_us(sys_time_handle time2_handle, sys_time_handle time1_handle) {
-	uint64_t time1_time_us = 1000000 * (60 * (60 * time1_handle->hours + time1_handle->minutes) + time1_handle->seconds) + time1_handle->uSec;
-	uint64_t time2_time_us = 1000000 * (60 * (60 * time2_handle->hours + time2_handle->minutes) + time2_handle->seconds) + time2_handle->uSec;
-	return time2_time_us - time1_time_us;
+uint64_t get_curr_time_us(void) {
+	return 1000000 * (60 * (60 * curr_time.hours + curr_time.minutes) + curr_time.seconds) + curr_time.uSec;
+}
+
+uint64_t get_time_lapsed_us(sys_time_handle time_handle) {
+	uint64_t time_us = 1000000 * (60 * (60 * time_handle->hours + time_handle->minutes) + time_handle->seconds) + time_handle->uSec;
+	uint64_t curr_time_us = 1000000 * (60 * (60 * curr_time.hours + curr_time.minutes) + curr_time.seconds) + curr_time.uSec;
+	return curr_time_us - time_us;
 }
 
 // Timer Interrupt Service Routine

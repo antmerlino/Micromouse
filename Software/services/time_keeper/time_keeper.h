@@ -23,8 +23,13 @@ void init_time_keeper(void);
 void get_current_time(sys_time_handle time_handle);
 
 /**
+ * For those who detest structure... Get the current time since start in uSeconds.
+ */
+uint64_t get_curr_time_us(void);
+
+/**
  * Returns the number of microseconds since the time_handle has occurred.
  */
-uint64_t get_time_lapsed_us(sys_time_handle time2_handle, sys_time_handle time1_handle);
+uint64_t get_time_lapsed_us(sys_time_handle time_handle);
 
 #endif
