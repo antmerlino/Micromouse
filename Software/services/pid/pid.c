@@ -1,6 +1,6 @@
 #include "pid.h"
 
-void init_pwm_controller(pid_controller_handle pid_handle, float kp, float ki, float kd, float curr_time_us) {
+void init_pwm_controller(pid_controller_t *pid_handle, float kp, float ki, float kd, float curr_time_us) {
 
 	pid_handle->kp = kp;
 	pid_handle->ki = ki;
@@ -10,7 +10,7 @@ void init_pwm_controller(pid_controller_handle pid_handle, float kp, float ki, f
 	pid_handle->prev_error = 0;
 }
 
-float calc_pid_out(pid_controller_handle pid_handle, float stpt, float meas, float curr_time_us) {
+float calc_pid_out(pid_controller_t *pid_handle, float stpt, float meas, float curr_time_us) {
 
 	// Calculate error
 	float curr_error = stpt-meas;
