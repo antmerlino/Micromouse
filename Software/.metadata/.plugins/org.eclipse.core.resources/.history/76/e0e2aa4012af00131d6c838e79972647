@@ -1,0 +1,31 @@
+/*
+ * sysem.c
+ *
+ *  Created on: Mar 18, 2014
+ *      Author: Anthony Merlino and Brad Ebinger
+ */
+
+#include "system.h"
+#include "motor.h"
+
+#include "driverlib/sysctl.h"
+
+
+void system_init(){
+
+	/**
+	 * Allow access to all GPIO port registers
+	 */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+#ifdef MOTORS_ENABLE
+    motors_init();
+#endif
+
+
+}

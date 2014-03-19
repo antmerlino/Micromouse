@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;micromouse/EK_TM4C123GXL.cmd&apos; to &apos;micromouse.cmd&apos;" description="Rename resource &apos;EK_TM4C123GXL.cmd&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="EK_TM4C123GXL.cmd" name="micromouse.cmd" stamp="1395200250607" updateReferences="true"/>
+</session>

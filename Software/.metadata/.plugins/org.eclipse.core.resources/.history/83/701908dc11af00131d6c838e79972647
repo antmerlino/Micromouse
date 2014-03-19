@@ -1,0 +1,78 @@
+/*
+ * motor.h
+ *
+ *  Created on: Mar 18, 2014
+ *      Author: Anthony
+ */
+
+#ifndef MOTOR_H_
+#define MOTOR_H_
+
+#include <stdint.h>
+#include <stdbool.h>
+
+// CPU/MOTOR Configurations
+// CPU_FREQ/64
+#define PWM_TIMER_FREQ 1250000//Hz
+#define MOTOR_PERIOD 50000
+
+#define STNDBY GPIO_PIN_4
+
+// Holds PWM information for each motor
+typedef struct motor_config_t {
+	uint32_t pwm_base_module;
+	uint32_t pwm_generator;
+	uint32_t pwm_pin;
+	uint32_t dir_port;
+	uint32_t dir_pins[2];
+} motor_config_t;
+
+typedef enum motor_index_t {
+	RIGHT_MOTOR,
+	LEFT_MOTOR,
+	NUM_MOTORS
+};
+
+typedef enum motor_diection_t {
+	CW,
+	CCW,
+	BRAKE,
+	STOP
+};
+
+// Define config information for the motors
+static motor_config_t motors[NUM_MOTORS] = {
+	{// Right Motor (PF2)
+		PWM1_BASE,
+		PWM_GEN_3,
+		PWM_OUT_6,
+		GPIO_PORTA_BASE,
+		{GPIO_PIN_5, GPIO_PIN_6}
+	},
+	{// Left Motor (PF3)
+		PWM1_BASE,
+		PWM_GEN_3,
+		PWM_OUT_7,
+		GPIO_PORTA_BASE,
+		{GPIO_PIN_3, GPIO_PIN_3}
+	}
+};
+
+/*
+ * Initialize all pins and register with system using GPIO libraries.
+ * NOTE: If a new motor is added to the pwm_motors list, please make
+ * 		 it is initialized in this function.
+ */
+void motors_init(void);
+
+/*
+ * Sets the duty cycle to the closest approximation of uSec that can be set.
+ * After the function returns, the uSec variable will be changed to the approximation
+ * that the pulse width was set to.
+ */
+void set_pulse_width(uint8_t motorIndex, uint16_t *uSec);
+
+void set_pwm_state(bool isOn);
+
+
+#endif /* MOTOR_H_ */

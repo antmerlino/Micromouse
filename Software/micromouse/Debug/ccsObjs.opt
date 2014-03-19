@@ -1,0 +1,1 @@
+-l"./configPkg/linker.cmd" "./drivers/motor.obj" "./services/time_keeper.obj" "./services/pid.obj" "./system.obj" "./main.obj" "../micromouse.cmd" -l"libc.a" -l"C:/ti/tirtos_1_21_00_09/products/TivaWare_C_Series-2.0.1.11577a/driverlib/ccs/Debug/driverlib.lib" -l"C:/ti/tirtos_1_21_00_09/products/TivaWare_C_Series-2.0.1.11577a/usblib/ccs/Debug/usblib.lib" 

@@ -1,0 +1,25 @@
+/*
+ * system.h
+ *
+ *  Created on: Mar 18, 2014
+ *      Author: Anthony
+ */
+
+#ifndef SYSTEM_H_
+#define SYSTEM_H_
+
+#include "drivers/motor.h"
+
+#include "driverlib/sysctl.h"
+
+/**
+ * Enable Flags for System Peripherals, Drivers, and Services
+ */
+
+#define MOTORS_ENABLE
+
+
+
+void system_init();
+
+#endif /* SYSTEM_H_ */
