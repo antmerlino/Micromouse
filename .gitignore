@@ -1,8 +1,4 @@
-#Software/.metadata/
-#Software/micromouse/.config/
-#Software/micromouse/Debug/
-#Software/micromouse/src/
-#Software/micromouse/.ccsproject
-#Software/micromouse/.cproject
-#Software/micromouse/.launches/micromouse.launch
-#Software/micromouse/.settings/org.eclipse.core.resources.prefs
+Software/micromouse/Debug/
+Software/micromouse/.config/
+Software/micromouse/.launches/
+Software/micromouse/src/

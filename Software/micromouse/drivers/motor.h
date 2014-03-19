@@ -16,9 +16,11 @@
 #include "system.h"
 
 // CPU/MOTOR Configurations
-// CPU_FREQ/64
-#define CLK_FREQ 100000000
-#define PWM_TIMER_FREQ CLK_FREQ/64 // Hz
+#define CLK_FREQ 80000000
+#define PWM_CLK_DIV 64
+
+#define PWM_TIMER_FREQ (CLK_FREQ/PWM_CLK_DIV) // Hz
+// NOTE: About 52000 us is the high limit for period!
 #define MOTOR_PERIOD 50000
 
 // Holds PWM information for each motor
