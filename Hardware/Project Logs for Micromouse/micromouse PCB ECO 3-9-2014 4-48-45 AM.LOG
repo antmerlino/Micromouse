@@ -1,0 +1,8 @@
+Added Component: Designator=S2(SPDT Switch)
+Added Pin To Net: NetName=GND Pin=S2-1
+Added Pin To Net: NetName=3.3V Pin=S2-3
+Added Pin To Net: NetName=MODE Pin=S2-2
+Added Pin To Net: NetName=MODE Pin=U4-18
+Added Net: Name=MODE
+Added Member To Class: ClassName=IR_Receivers Member=Component IR4 TSL262R
+Added Member To Class: ClassName=controller_peripherals Member=Component S2 SW-SPDT

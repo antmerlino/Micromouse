@@ -1,0 +1,11 @@
+Added Pin To Net: NetName=IR_FRONT_L Pin=U4-1
+Added Pin To Net: NetName=IR_DIAGONAL_L Pin=U4-4
+Added Pin To Net: NetName=IR_SIDE_1 Pin=U4-5
+Added Pin To Net: NetName=IR_SIDE_2 Pin=U4-43
+Added Pin To Net: NetName=IR_DIAGONAL_R Pin=U4-44
+Added Pin To Net: NetName=TDO Pin=U4-49
+Added Pin To Net: NetName=TDI Pin=U4-50
+Added Pin To Net: NetName=TMS Pin=U4-51
+Added Pin To Net: NetName=TCLK Pin=U4-52
+Added Pin To Net: NetName=IR_FRONT_R Pin=U4-53
+Added Member To Class: ClassName=IR_Emitters Member=Component D8 LED

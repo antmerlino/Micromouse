@@ -1,0 +1,4 @@
+Layer Pairs Export File for PCB: F:\Projects\Micromouse\Hardware\micromouse.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=micromouse-roundholes.txt|LayerPairs=gtl,gbl
+LayersSetName=Top_Bot_Square_Holes|DrillFile=micromouse-squareholes.txt|LayerPairs=gtl,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=micromouse-slotholes.txt|LayerPairs=gtl,gbl

@@ -1,0 +1,430 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html">
+<style type="text/css">
+		h1, h2, h3, h4, h5, h6 {
+			font-family : sans-serif;
+			color : white;
+			background-color : #21489e;
+			padding: 0.3em;
+		}
+		body {
+			font-family : verdana;
+		}
+		td, th {
+			padding: 0.5em;
+			text-align : center;
+			width : 18%;
+		}
+		th {
+			background-color : #A6CAF0;
+
+		}
+		th.column1, td.column1 {
+			text-align: left;
+			width : auto;
+		}
+		table {
+			width : 100%;
+		}
+		
+		.DRC_summary_header {							
+			padding-bottom : 0.1em;
+			border : 0px solid black;							
+			width: 100%;
+                        align: right;
+                        
+		}
+
+		.DRC_summary_header_col1, 
+		.DRC_summary_header_col2, 
+		.DRC_summary_header_col3
+		{
+			color : black;
+			font-size:150%;
+                        padding : 0em;
+			padding-top : 0.2em;
+			padding-bottom 0.2: 0em;
+			border : 0px solid black;
+			width : auto;
+			vertical-align: top;
+			font-weight: bold;				
+		}
+		
+		.DRC_summary_header_col1 	
+		{		                       
+			text-align: right;
+                        width: auto;	
+		}
+
+		.DRC_summary_header_col2 	
+		{		
+			text-align: center;	
+		}
+
+		.DRC_summary_header_col3 	
+		{		
+			text-align: left;	
+		}
+
+
+		
+		.header_holder
+		{
+		Width = 100%;
+		border = 0px solid green;
+		padding = 0;
+		}
+		
+		
+		
+		.front_matter, .front_matter_column1, .front_matter_column2, .front_matter_column3
+                {
+			left:0;
+			top:0;
+			padding-top : 0.1em;			
+			border : 0px solid black;
+			width : 100%;
+			vertical-align: top
+
+		}
+		.front_matter {	
+			
+			margin-top: 5px;
+ 			margin-left: 0px;					 			
+ 			horizontal-align: left;
+		}
+				
+		
+		.front_matter_column1 {
+			width : 10em;	
+			text-align  : right;
+			padding-right:0.1em;
+			
+		}
+		
+		.front_matter_column2 {
+                        width: 0.1em;
+			align: center;
+			text-align : center;
+			margin-right  : 0.1em;	
+			margin-left   : 0.1em;
+		}
+		.front_matter_column3 {
+			width         : auto;  
+			text-align    : left;	
+			margin-right  : 0.5em;				
+		}
+		
+		.total_column1, .total_column {
+			font-weight : bold;
+		}
+		.total_column1 {
+			text-align : right;
+		}
+		.warning, .error {
+			color : red;
+			font-weight : bold;
+		}
+		tr.onmouseout_odd {
+			background-color : #EEEEE0 
+		}
+		tr.onmouseout_even { 
+			background-color : #F3F3E3   
+		}
+		tr.onmouseover_odd, tr.onmouseover_even { 
+			background-color : lightYellow
+		} 
+		a:link, a:visited, .q a:link,.q a:active,.q {
+			color: #21489e; 
+		}
+		a:link.callback, a:visited.callback { 
+			color: #008000 
+		}
+		a:link.customize, a:visited.customize {
+			color: #C0C0C0;
+			position: absolute; 
+			right: 10px;
+		}	
+		p.contents_level1 {
+			font-weight : bold;
+			font-size : 110%;
+			margin : 0.5em;
+		}
+		p.contents_level2 {
+			position : relative;
+			left : 20px;
+			margin : 0.5em;
+		}
+	</style><script type="text/javascript">
+		function coordToMils(coord) {
+			var number = coord / 10000;
+			
+			if (number != number.toFixed(3))
+				number = number.toFixed(3);
+
+			return number + 'mil'
+		}
+
+		function coordToMM(coord) {
+			var number = 0.0254 * coord / 10000;
+			
+			if (number != number.toFixed(4))
+				number = number.toFixed(4);
+			
+			return number + 'mm'
+		}
+	
+		function convertCoord(coordNode, units) {
+			for (var i = 0; i < coordNode.childNodes.length; i++) {
+				coordNode.removeChild(coordNode.childNodes[i]);
+			}
+
+			var coord = coordNode.getAttribute('value');
+			if (coord != null) {
+				if (units == 'mm') {
+					textNode = document.createTextNode(coordToMM(coord));
+					coordNode.appendChild(textNode);
+				} else if (units == 'mil') {
+					textNode = document.createTextNode(coordToMils(coord));		
+					coordNode.appendChild(textNode);	
+				}
+			}
+		}
+	
+		function convertUnits(unitNode, units) {
+			for (var i = 0; i < unitNode.childNodes.length; i++) {
+				unitNode.removeChild(unitNode.childNodes[i]);		
+			}
+		
+			textNode = document.createTextNode(units); 
+			unitNode.appendChild(textNode);
+		}
+	
+		function changeUnits(radio_input, units) {
+			if (radio_input.checked) {
+			
+				var elements = document.getElementsByName('coordinate');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertCoord(elements[i], units);
+					}
+				}
+	
+				var elements = document.getElementsByName('units');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertUnits(elements[i], units);
+					}
+				}
+			}
+		}
+	</script><title>Design Rule Verification Report</title>
+</head>
+<body onload=""><img ALT="Altium" src="
+			file://C:\Users\Public\Documents\Altium\AD14\Templates\AD-rgb_logo_223x64.gif
+		"><a href="dxpprocess://Client:SetupPreferences?Server=PCB|PageName=Reports" class="customize"><acronym title="dxpprocess://Client:SetupPreferences?Server=PCB|PageName=Reports">customize</acronym></a><h1>Design Rule Verification Report</h1>
+<table class="header_holder">
+<td Style="width:70%">
+<table class="front_matter">
+<tr class="front_matter">
+<td class="front_matter_column1">Date</td>
+<td class="front_matter_column2">:</td>
+<td class="front_matter_column3">3/10/2014</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Time</td>
+<td class="front_matter_column2">:</td>
+<td class="front_matter_column3">11:47:53 AM</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Elapsed Time</td>
+<td class="front_matter_column2">:</td>
+<td class="front_matter_column3">00:00:00</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Filename</td>
+<td class="front_matter_column2">:</td>
+<td class="front_matter_column3"><a href="file:///F:\Projects\Micromouse\Hardware\micromouse.PcbDoc" class="file"><acronym title="F:\Projects\Micromouse\Hardware\micromouse.PcbDoc">F:\Projects\Micromouse\Hardware\micromouse.PcbDoc</acronym></a></td>
+</tr>
+</table>
+</td>
+<td Style="Width:30%">
+<table class="DRC_summary_header">
+<tr>
+<td class="DRC_summary_header_col1">Warnings</td>
+<td class="DRC_summary_header_col2">:</td>
+<td class="DRC_summary_header_col3">0</td></tr>
+<tr>
+<td class="DRC_summary_header_col1">Rule Violations</td>
+<td class="DRC_summary_header_col2">:</td>
+<td class="DRC_summary_header_col3" style="color : red">24</td></tr>
+</table>
+</td>
+</table>
+<hr><a name="IDTLRB3AR2R5L2FAUGZUA5SX4UMM"><h2>Summary</h2></a><table>
+<tr>
+<th class="column1">Warnings</th>
+<th class="column2">Count</th>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">0</td>
+</tr>
+</table><br><table>
+<tr>
+<th class="column1">Rule Violations</th>
+<th class="column2">Count</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDGTP1I5M40QJRBBXWPZZWPF2YXO">Silk primitive without silk layer</a></td>
+<td class="column2">14</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDSDUI3EOAP2LZPKSHOV22X2NXWM">Silk To Solder Mask (Clearance=5mil) (IsPad),(All)</a></td>
+<td class="column2">10</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDMOHHXNQTOQDCPDUJH3MYCKUK3C">Net Antennae (Tolerance=0mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#ID1RYBRMHF4IDRESA0CFDWSVPGNB">Silk to Silk (Clearance=10mil) (Disabled)(All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#ID1JUJWVCWXB11POZC43TJFZWMOD">Minimum Solder Mask Sliver (Gap=10mil) (Disabled)(All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDX0KIPY04URKXCVBJZYKNR41QHF">Minimum Solder Mask Sliver (Gap=10mil) (Disabled)(All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDJJWURYV5ZEVCHVCGGHTLJ5TXRK">Hole To Hole Clearance (Gap=10mil) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDCSJ34OHIMYP3GTGOETKEXD5JCL">Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDHLBHBWJMJBZTLYRRQPVLCPLRP">Hole Size Constraint (Min=1mil) (Max=100mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDLC4AWHDN20JDKPXV1JDJ3TJPG">Un-Routed Net Constraint ( (All) )</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDTERNNHUDV3UVFFXWKZE1VZ0OCD">Short-Circuit Constraint (Allowed=No) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDJWERGG030Y4VD22OP2ELZKD1H">Power Plane Connect Rule(Relief Connect )(Expansion=20mil) (Conductor Width=10mil) (Air Gap=10mil) (Entries=4) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDR1XENHHG0HTBNVBTXP0LDCRC5I">Width Constraint (Min=7mil) (Max=50mil) (Preferred=8mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDAA1FVDJTN3125M0VNOKAQ0HM">Clearance Constraint (Gap=7mil) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">24</td>
+</tr>
+</table><br><hr><a name="IDGTP1I5M40QJRBBXWPZZWPF2YXO"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Silk primitive without silk layer</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3936.791mil|Location2.X=3972.955mil|Location1.Y=1745.178mil|Location2.Y=1753.012mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3936.791mil|Location2.X=3972.955mil|Location1.Y=1745.178mil|Location2.Y=1753.012mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Track (188.976mil,-2095.432mil)(188.976mil,-1524.566mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3570.651mil|Location2.X=3606.815mil|Location1.Y=1745.178mil|Location2.Y=1753.012mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3570.651mil|Location2.X=3606.815mil|Location1.Y=1745.178mil|Location2.Y=1753.012mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Track (-177.164mil,-2095.432mil)(-177.164mil,-1524.566mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3631.675mil|Location2.X=3911.931mil|Location1.Y=1337.699mil|Location2.Y=1589.625mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3631.675mil|Location2.X=3911.931mil|Location1.Y=1337.699mil|Location2.Y=1589.625mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Track (-177.164mil,-2095.432mil)(188.976mil,-2095.432mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4070.178mil|Location2.X=4142.533mil|Location1.Y=5661.086mil|Location2.Y=5705.111mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4070.178mil|Location2.X=4142.533mil|Location1.Y=5661.086mil|Location2.Y=5705.111mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "S1" (314.22mil,2104.325mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3758.843mil|Location2.X=3861.809mil|Location1.Y=5709.27mil|Location2.Y=5783.906mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3758.843mil|Location2.X=3861.809mil|Location1.Y=5709.27mil|Location2.Y=5783.906mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "R19" (-4.768mil,2167.815mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3654.979mil|Location2.X=3757.945mil|Location1.Y=5708.286mil|Location2.Y=5782.922mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3654.979mil|Location2.X=3757.945mil|Location1.Y=5708.286mil|Location2.Y=5782.922mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "R18" (-108.632mil,2166.831mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5074.62mil|Location2.X=5466.208mil|Location1.Y=3971.306mil|Location2.Y=4334.563mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5074.62mil|Location2.X=5466.208mil|Location1.Y=3971.306mil|Location2.Y=4334.563mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "Pre-Biased NPN" (1238.854mil,574.161mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3206.632mil|Location2.X=3287.733mil|Location1.Y=5948.579mil|Location2.Y=6001.35mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3206.632mil|Location2.X=3287.733mil|Location1.Y=5948.579mil|Location2.Y=6001.35mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "P7" (-551.513mil,2396.191mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4172.587mil|Location2.X=4485.46mil|Location1.Y=1264.002mil|Location2.Y=1548.544mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4172.587mil|Location2.X=4485.46mil|Location1.Y=1264.002mil|Location2.Y=1548.544mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "RIGHT MOTOR" (356.5mil,-2172.5mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2967.121mil|Location2.X=3258.128mil|Location1.Y=1274.935mil|Location2.Y=1537.612mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2967.121mil|Location2.X=3258.128mil|Location1.Y=1274.935mil|Location2.Y=1537.612mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "LEFT MOTOR" (-843.5mil,-2172.5mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2032.312mil|Location2.X=2135.278mil|Location1.Y=2866.258mil|Location2.Y=2940.894mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2032.312mil|Location2.X=2135.278mil|Location1.Y=2866.258mil|Location2.Y=2940.894mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "IR6" (-1731.299mil,-675.197mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2311.839mil|Location2.X=2414.805mil|Location1.Y=5310.156mil|Location2.Y=5384.792mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2311.839mil|Location2.X=2414.805mil|Location1.Y=5310.156mil|Location2.Y=5384.792mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "IR3" (-1451.772mil,1768.701mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4977.204mil|Location2.X=5084.543mil|Location1.Y=3946.769mil|Location2.Y=4025.778mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4977.204mil|Location2.X=5084.543mil|Location1.Y=3946.769mil|Location2.Y=4025.778mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "LED" (1212.5mil,407.5mil)  Top Overlay</acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2327.204mil|Location2.X=2434.543mil|Location1.Y=3946.769mil|Location2.Y=4025.778mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2327.204mil|Location2.X=2434.543mil|Location1.Y=3946.769mil|Location2.Y=4025.778mil|Absolute=True">Silk To Board Region Clearance (Out of silkscreen region) : Text "LED" (-1437.5mil,407.5mil)  Top Overlay</acronym></a><br></td>
+</tr>
+</table></a><a href="#top">Back to top</a><br><br><a name="IDSDUI3EOAP2LZPKSHOV22X2NXWM"><table>
+<tr>
+<th style="text-align : left" colspan="2" class="rule">Silk To Solder Mask (Clearance=5mil) (IsPad),(All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3569.568mil|Location2.X=3945.708mil|Location1.Y=2029.528mil|Location2.Y=2039.528mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3569.568mil|Location2.X=3945.708mil|Location1.Y=2029.528mil|Location2.Y=2039.528mil|Absolute=True">Track (-177.164mil,-1524.566mil)(188.976mil,-1524.566mil)  Top Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3703.441mil|Location2.X=3800.023mil|Location1.Y=1961.63mil|Location2.Y=2036.559mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3703.441mil|Location2.X=3800.023mil|Location1.Y=1961.63mil|Location2.Y=2036.559mil|Absolute=True">Pad J1-1(0mil,-1560.001mil)  Multi-Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3935.708mil|Location2.X=3945.708mil|Location1.Y=1458.662mil|Location2.Y=2039.528mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3935.708mil|Location2.X=3945.708mil|Location1.Y=1458.662mil|Location2.Y=2039.528mil|Absolute=True">Track (188.976mil,-2095.432mil)(188.976mil,-1524.566mil)  Top Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3903.244mil|Location2.X=3978.173mil|Location1.Y=1832.693mil|Location2.Y=1929.275mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3903.244mil|Location2.X=3978.173mil|Location1.Y=1832.693mil|Location2.Y=1929.275mil|Absolute=True">Pad J1-3(188.976mil,-1678.111mil)  Multi-Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3807.835mil|Location2.X=3834.409mil|Location1.Y=3633.897mil|Location2.Y=3641.771mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3807.835mil|Location2.X=3834.409mil|Location1.Y=3633.897mil|Location2.Y=3641.771mil|Absolute=True">Track (60.04mil,78.74mil)(78.74mil,78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3792.023mil|Location2.X=3809.865mil|Location1.Y=3622.023mil|Location2.Y=3655.613mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3792.023mil|Location2.X=3809.865mil|Location1.Y=3622.023mil|Location2.Y=3655.613mil|Absolute=True">Pad U1-24(49.212mil,79.724mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3695.629mil|Location1.Y=3633.897mil|Location2.Y=3641.771mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3695.629mil|Location1.Y=3633.897mil|Location2.Y=3641.771mil|Absolute=True">Track (-78.74mil,78.74mil)(-60.04mil,78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3693.599mil|Location2.X=3711.441mil|Location1.Y=3622.023mil|Location2.Y=3655.613mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3693.599mil|Location2.X=3711.441mil|Location1.Y=3622.023mil|Location2.Y=3655.613mil|Absolute=True">Pad U1-19(-49.212mil,79.724mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3676.929mil|Location1.Y=3615.197mil|Location2.Y=3641.771mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3676.929mil|Location1.Y=3615.197mil|Location2.Y=3641.771mil|Absolute=True">Track (-78.74mil,60.039mil)(-78.74mil,78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3655.213mil|Location2.X=3688.803mil|Location1.Y=3599.387mil|Location2.Y=3617.229mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3655.213mil|Location2.X=3688.803mil|Location1.Y=3599.387mil|Location2.Y=3617.229mil|Absolute=True">Pad U1-18(-79.724mil,49.214mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3676.929mil|Location1.Y=3476.417mil|Location2.Y=3502.993mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3676.929mil|Location1.Y=3476.417mil|Location2.Y=3502.993mil|Absolute=True">Track (-78.74mil,-78.74mil)(-78.74mil,-60.038mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3655.213mil|Location2.X=3688.803mil|Location1.Y=3500.961mil|Location2.Y=3518.803mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3655.213mil|Location2.X=3688.803mil|Location1.Y=3500.961mil|Location2.Y=3518.803mil|Absolute=True">Pad U1-13(-79.724mil,-49.212mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3695.629mil|Location1.Y=3476.417mil|Location2.Y=3484.291mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3669.055mil|Location2.X=3695.629mil|Location1.Y=3476.417mil|Location2.Y=3484.291mil|Absolute=True">Track (-78.74mil,-78.74mil)(-60.04mil,-78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3693.599mil|Location2.X=3711.441mil|Location1.Y=3462.575mil|Location2.Y=3496.165mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3693.599mil|Location2.X=3711.441mil|Location1.Y=3462.575mil|Location2.Y=3496.165mil|Absolute=True">Pad U1-12(-49.212mil,-79.725mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3807.835mil|Location2.X=3834.409mil|Location1.Y=3476.417mil|Location2.Y=3484.291mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3807.835mil|Location2.X=3834.409mil|Location1.Y=3476.417mil|Location2.Y=3484.291mil|Absolute=True">Track (60.04mil,-78.74mil)(78.74mil,-78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3792.023mil|Location2.X=3809.865mil|Location1.Y=3462.575mil|Location2.Y=3496.165mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3792.023mil|Location2.X=3809.865mil|Location1.Y=3462.575mil|Location2.Y=3496.165mil|Absolute=True">Pad U1-7(49.212mil,-79.725mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3826.535mil|Location2.X=3834.409mil|Location1.Y=3476.417mil|Location2.Y=3502.993mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3826.535mil|Location2.X=3834.409mil|Location1.Y=3476.417mil|Location2.Y=3502.993mil|Absolute=True">Track (78.74mil,-78.74mil)(78.74mil,-60.038mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3814.661mil|Location2.X=3848.251mil|Location1.Y=3500.961mil|Location2.Y=3518.803mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3814.661mil|Location2.X=3848.251mil|Location1.Y=3500.961mil|Location2.Y=3518.803mil|Absolute=True">Pad U1-6(79.724mil,-49.212mil)  Bottom Layer</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td style="width:50%; text-align:left" class="column1"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3826.535mil|Location2.X=3834.409mil|Location1.Y=3615.197mil|Location2.Y=3641.771mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3826.535mil|Location2.X=3834.409mil|Location1.Y=3615.197mil|Location2.Y=3641.771mil|Absolute=True">Track (78.74mil,60.039mil)(78.74mil,78.74mil)  Bottom Overlay</acronym></a></td>
+<td style="width:50%; text-align:left" class="column2"><a href="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3814.661mil|Location2.X=3848.251mil|Location1.Y=3599.387mil|Location2.Y=3617.229mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=F:\Projects\Micromouse\Hardware\micromouse.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3814.661mil|Location2.X=3848.251mil|Location1.Y=3599.387mil|Location2.Y=3617.229mil|Absolute=True">Pad U1-1(79.724mil,49.214mil)  Bottom Layer</acronym></a></td>
+</tr>
+</table></a><a href="#top">Back to top</a><br><br></body>
+</html>

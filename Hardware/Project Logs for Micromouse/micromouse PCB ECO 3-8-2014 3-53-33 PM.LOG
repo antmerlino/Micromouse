@@ -1,0 +1,11 @@
+Removed Pin From Net: NetName=GND Pin=D5-1
+Removed Member From Class: ClassName=IR_Emitters Member=D6
+Change Component Designator: OldDesignator=D6 NewDesignator=D5
+Change Component Designator: OldDesignator=D7 NewDesignator=D6]
+Change Component Designator: OldDesignator=D8 NewDesignator=D7
+Change Component Designator: OldDesignator=D9 NewDesignator=D8
+Added Pin To Net: NetName=GND Pin=Q4-2
+Change Net Name : Old Net Name=NetD6_2 New Net Name=NetD5_2
+Change Net Name : Old Net Name=NetD7_2 New Net Name=NetD6]_2
+Change Net Name : Old Net Name=NetD8_2 New Net Name=NetD7_2
+Change Net Name : Old Net Name=NetD9_2 New Net Name=NetD8_2

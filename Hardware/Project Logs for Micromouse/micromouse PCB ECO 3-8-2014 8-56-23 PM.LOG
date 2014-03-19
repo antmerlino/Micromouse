@@ -1,0 +1,12 @@
+Removed Pin From Net: NetName=MOTORCONTROL_RIGHT2 Pin=U4-19
+Removed Pin From Net: NetName=MOTORCONTROL_RIGHT1 Pin=U4-20
+Removed Pin From Net: NetName=MOTORCONTROL_LEFT2 Pin=U4-22
+Removed Pin From Net: NetName=MOTORCONTROL_LEFT1 Pin=U4-23
+Removed Pin From Net: NetName=MOTORCONTROL_LEFTPWM Pin=U4-30
+Removed Pin From Net: NetName=MOTORCONTROL_RIGHTPWM Pin=U4-31
+Added Pin To Net: NetName=MOTORCONTROL_LEFT2 Pin=U4-19
+Added Pin To Net: NetName=MOTORCONTROL_LEFT1 Pin=U4-20
+Added Pin To Net: NetName=MOTORCONTROL_RIGHT1 Pin=U4-22
+Added Pin To Net: NetName=MOTORCONTROL_RIGHT2 Pin=U4-23
+Added Pin To Net: NetName=MOTORCONTROL_RIGHTPWM Pin=U4-30
+Added Pin To Net: NetName=MOTORCONTROL_LEFTPWM Pin=U4-31

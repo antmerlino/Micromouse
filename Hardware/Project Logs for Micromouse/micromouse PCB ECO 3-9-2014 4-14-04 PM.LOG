@@ -1,0 +1,3 @@
+Removed Pin From Net: NetName=VBAT Pin=R14-1
+Change Component Designator: OldDesignator=MODE NewDesignator=S2
+Added Pin To Net: NetName=NetD12_2 Pin=R14-1

@@ -1,0 +1,18 @@
+Added Pin To Net: NetName=3.3V Pin=IR1-1
+Added Pin To Net: NetName=3.3V Pin=IR2-1
+Added Pin To Net: NetName=3.3V Pin=IR3-1
+Added Pin To Net: NetName=3.3V Pin=IR4-1
+Added Pin To Net: NetName=3.3V Pin=IR5-1
+Added Pin To Net: NetName=3.3V Pin=IR6-1
+Added Pin To Net: NetName=3.3V Pin=IR7-1
+Added Pin To Net: NetName=3.3V Pin=IR8-1
+Added Pin To Net: NetName=3.3V Pin=R3-1
+Added Pin To Net: NetName=3.3V Pin=R4-1
+Added Pin To Net: NetName=3.3V Pin=R5-1
+Added Pin To Net: NetName=3.3V Pin=R6-1
+Added Pin To Net: NetName=3.3V Pin=R7-1
+Added Pin To Net: NetName=3.3V Pin=R8-1
+Added Pin To Net: NetName=3.3V Pin=R9-1
+Added Pin To Net: NetName=3.3V Pin=R10-1
+Added Member To Class: ClassName=battery_charger Member=Component Q10 Dual P-Channel
+Added Member To Class: ClassName=controller_power Member=Component Y1 XTAL

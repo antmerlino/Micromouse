@@ -1,0 +1,4 @@
+Added Component: Designator=S2(SPDT Switch)
+Added Pin To Net: NetName=MODE Pin=S2-2
+Added Pin To Net: NetName=MODE Pin=U4-18
+Added Net: Name=MODE

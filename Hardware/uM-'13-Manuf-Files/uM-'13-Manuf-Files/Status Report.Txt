@@ -1,0 +1,13 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [Micromouse.PrjPcb]
+   Generated File[micromouse.TXT]
+   Generated File[micromouse.DRL]
+   Generated File[micromouse.LDP]
+   Generated File[micromouse.DRR]
+
+
+Files Generated   : 4
+Documents Printed : 0
+
+Finished Output Generation At 7:29:29 PM On 4/4/2013

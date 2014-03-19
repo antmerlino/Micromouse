@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=GND Pin=P6-2
+Removed Member From Class: ClassName=battery_charger Member=P6
+Added Pin To Net: NetName=GND Pin=U3-8
+Added Member To Class: ClassName=IR_Emitters Member=Component D6 LED

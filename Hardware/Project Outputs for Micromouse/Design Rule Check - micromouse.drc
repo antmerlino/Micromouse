@@ -1,0 +1,84 @@
+Protel Design System Design Rule Check
+PCB File : F:\Projects\Micromouse\Hardware\micromouse.PcbDoc
+Date     : 3/10/2014
+Time     : 11:47:53 AM
+
+Processing Rule : Silk primitive without silk layer
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Track (188.976mil,-2095.432mil)(188.976mil,-1524.566mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Track (-177.164mil,-2095.432mil)(-177.164mil,-1524.566mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Track (-177.164mil,-2095.432mil)(188.976mil,-2095.432mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "S1" (314.22mil,2104.325mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "R19" (-4.768mil,2167.815mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "R18" (-108.632mil,2166.831mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "Pre-Biased NPN" (1238.854mil,574.161mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "P7" (-551.513mil,2396.191mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "RIGHT MOTOR" (356.5mil,-2172.5mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "LEFT MOTOR" (-843.5mil,-2172.5mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "IR6" (-1731.299mil,-675.197mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "IR3" (-1451.772mil,1768.701mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "LED" (1212.5mil,407.5mil)  Top Overlay
+   Violation between Silk To Board Region Clearance (Out of silkscreen region) : Text "LED" (-1437.5mil,407.5mil)  Top Overlay
+Rule Violations :14
+
+Processing Rule : Silk To Solder Mask (Clearance=5mil) (IsPad),(All)
+   Violation between Track (-177.164mil,-1524.566mil)(188.976mil,-1524.566mil)  Top Overlay and 
+                     Pad J1-1(0mil,-1560.001mil)  Multi-Layer
+   Violation between Track (188.976mil,-2095.432mil)(188.976mil,-1524.566mil)  Top Overlay and 
+                     Pad J1-3(188.976mil,-1678.111mil)  Multi-Layer
+   Violation between Track (60.04mil,78.74mil)(78.74mil,78.74mil)  Bottom Overlay and 
+                     Pad U1-24(49.212mil,79.724mil)  Bottom Layer
+   Violation between Track (-78.74mil,78.74mil)(-60.04mil,78.74mil)  Bottom Overlay and 
+                     Pad U1-19(-49.212mil,79.724mil)  Bottom Layer
+   Violation between Track (-78.74mil,60.039mil)(-78.74mil,78.74mil)  Bottom Overlay and 
+                     Pad U1-18(-79.724mil,49.214mil)  Bottom Layer
+   Violation between Track (-78.74mil,-78.74mil)(-78.74mil,-60.038mil)  Bottom Overlay and 
+                     Pad U1-13(-79.724mil,-49.212mil)  Bottom Layer
+   Violation between Track (-78.74mil,-78.74mil)(-60.04mil,-78.74mil)  Bottom Overlay and 
+                     Pad U1-12(-49.212mil,-79.725mil)  Bottom Layer
+   Violation between Track (60.04mil,-78.74mil)(78.74mil,-78.74mil)  Bottom Overlay and 
+                     Pad U1-7(49.212mil,-79.725mil)  Bottom Layer
+   Violation between Track (78.74mil,-78.74mil)(78.74mil,-60.038mil)  Bottom Overlay and 
+                     Pad U1-6(79.724mil,-49.212mil)  Bottom Layer
+   Violation between Track (78.74mil,60.039mil)(78.74mil,78.74mil)  Bottom Overlay and 
+                     Pad U1-1(79.724mil,49.214mil)  Bottom Layer
+Rule Violations :10
+
+Processing Rule : Net Antennae (Tolerance=0mil) (All)
+Rule Violations :0
+
+Processing Rule : Silk to Silk (Clearance=10mil) (Disabled)(All),(All)
+Rule Violations :0
+
+Processing Rule : Minimum Solder Mask Sliver (Gap=10mil) (Disabled)(All),(All)
+Rule Violations :0
+
+Processing Rule : Minimum Solder Mask Sliver (Gap=10mil) (Disabled)(All),(All)
+Rule Violations :0
+
+Processing Rule : Hole To Hole Clearance (Gap=10mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)
+Rule Violations :0
+
+Processing Rule : Hole Size Constraint (Min=1mil) (Max=100mil) (All)
+Rule Violations :0
+
+Processing Rule : Un-Routed Net Constraint ( (All) )
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Power Plane Connect Rule(Relief Connect )(Expansion=20mil) (Conductor Width=10mil) (Air Gap=10mil) (Entries=4) (All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=7mil) (Max=50mil) (Preferred=8mil) (All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=7mil) (All),(All)
+Rule Violations :0
+
+
+Violations Detected : 24
+Time Elapsed        : 00:00:00
