@@ -10,26 +10,19 @@
 #include <ti/sysbios/BIOS.h>
 
 /* Board Header file */
-#include "system.h"
+#include <system.h>
+
+#include "drivers/motor.h"
 
 /*
  *  ======== main ========
  */
 Int main(Void)
 {
-    /* Call board init functions */
-    Board_initGeneral();
-    Board_initGPIO();
-    // Board_initDMA();
-    // Board_initI2C();
-    // Board_initSPI();
-    // Board_initUART();
-    // Board_initUSB(Board_USBDEVICE);
-    // Board_initWatchdog();
-    // Board_initWiFi();
+	system_init();
 
-    /* Turn on user LED */
-    GPIO_write(Board_LED0, Board_LED_ON);
+	update_motor(LEFT_MOTOR, CW, 500);
+	update_motor(RIGHT_MOTOR, CW, 500);
 
     System_printf("Starting the example\nSystem provider is set to SysMin. "
                   "Halt the target and use ROV to view output.\n");
