@@ -27,6 +27,7 @@ typedef enum {
  */
 
 #define MOTORS_ENABLE
+#define IR_ADC_SENSORS_ENABLE
 
 void system_init();
 

@@ -11,6 +11,7 @@
 
 #include "system.h"
 #include "drivers/motor.h"
+#include "drivers/ir_adc_sensor.h"
 
 /* Callback functions for the GPIO interrupt example. */
 Void gpioButtonFxn0(Void);
@@ -57,6 +58,10 @@ void system_init(){
 
 #ifdef MOTORS_ENABLE
     motors_init();
+#endif
+
+#ifdef IR_ADC_SENSORS_ENABLE
+    ir_adc_sensor_init();
 #endif
 
     GPIO_init();
