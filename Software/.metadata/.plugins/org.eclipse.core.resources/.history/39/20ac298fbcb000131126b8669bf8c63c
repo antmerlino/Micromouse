@@ -1,0 +1,52 @@
+/*
+ * bluetooth.c
+ *
+ *  Created on: Mar 18, 2014
+ *      Author: Anthony
+ */
+
+
+#include "bluetooth.h"
+
+#include "driverlib/pin_map.h"
+#include "driverlib/sysctl.h"
+#include "inc/hw_memmap.h"
+#include "system.h"
+
+typedef struct {
+	UART_Handle handle;
+	UART_Params params;
+} bluetooth_t;
+
+
+bluetooth_t bluetooth;
+
+void bluetooth_init() {
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART4);
+	GPIOPinConfigure(GPIO_PC4_U4RX);
+	GPIOPinConfigure(GPIO_PC5_U4TX);
+	GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_6 | GPIO_PIN_7);
+}
+
+void bluetooth_open(){
+	UART_Params_init(&(bluetooth.params));
+	bluetooth.params.baudRate  = 115200;
+	bluetooth.params.writeDataMode = UART_DATA_BINARY;
+	bluetooth.params.readDataMode = UART_DATA_BINARY;
+	bluetooth.params.readReturnMode = UART_RETURN_FULL;
+	bluetooth.params.readEcho = UART_ECHO_OFF;
+	bluetooth.handle = UART_open(BLUETOOTH, &(bluetooth.params));
+	if (!bluetooth.handle) {
+		System_printf("UART did not open");
+	}
+}
+
+void bluetooth_transmit(char *data, int len) {
+	int ret = UART_write(bluesmirf.handle, data, len);
+	//System_printf("The UART wrote %d bytes\n", ret);
+}
+
+void bluetooth_receive(char *data, int len) {
+	int ret = UART_read(bluesmirf.handle, data, len);
+	//System_printf("The UART read %d bytes\n", ret);
+}

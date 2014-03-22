@@ -1,0 +1,13 @@
+/*
+ * control.h
+ *
+ *  Created on: Mar 21, 2014
+ *      Author: Anthony
+ */
+
+#ifndef CONTROL_H_
+#define CONTROL_H_
+
+void drive_straight();
+
+#endif /* CONTROL_H_ */

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_13" class="java.beans.XMLDecoder"> 
+ <object class="com.ti.dvt.uia.RunDialog$PersistState"> 
+  <void property="CSVFile"> 
+   <string>F:/Projects/Micromouse/Software\dvt\</string> 
+  </void> 
+  <void property="analysisTable"> 
+   <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisTable"> 
+    <void property="row"> 
+     <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+      <void property="values"> 
+       <void method="put"> 
+        <string>Which Cores</string> 
+        <string>Which Cores</string> 
+       </void> 
+       <void method="put"> 
+        <string>Which Views to Open</string> 
+        <string>Which Views to Open</string> 
+       </void> 
+       <void method="put"> 
+        <string>Analysis Feature</string> 
+        <string>Analysis Feature</string> 
+       </void> 
+      </void> 
+     </object> 
+    </void> 
+    <void property="rows"> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Execution Graph</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Detail</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>true</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>CPU Load</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>true</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Concurrency</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Detail</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Count Analysis</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Printf Logs</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Detail</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>true</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Task Load</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Detail</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Context Aware Profile</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Detail</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Graph</string> 
+           <boolean>false</boolean> 
+          </void> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Duration</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+     <void method="add"> 
+      <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisRow"> 
+       <void property="values"> 
+        <void method="put"> 
+         <string>Which Cores</string> 
+         <object class="java.util.Vector"> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+          <void method="add"> 
+           <string>CORTEX_M4_0</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Which Views to Open</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Summary</string> 
+           <boolean>true</boolean> 
+          </void> 
+         </object> 
+        </void> 
+        <void method="put"> 
+         <string>Analysis Feature</string> 
+         <object class="com.ti.dvt.control.gui.controls.AnalysisFeatures$AnalysisChecks"> 
+          <void method="put"> 
+           <string>Task Profiler</string> 
+           <boolean>false</boolean> 
+          </void> 
+         </object> 
+        </void> 
+       </void> 
+      </object> 
+     </void> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="liveParam"> 
+   <object class="com.ti.dvt.uia.utils.IUtilUI$RunParam"> 
+    <void property="captureFilename"> 
+     <string>F:/Projects/Micromouse/Software\dvt\systemAnalyzerData</string> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

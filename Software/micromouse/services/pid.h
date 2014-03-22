@@ -16,8 +16,8 @@ typedef struct pid_controller_t {
 	float prev_time_us;
 } pid_controller_t;
 
-void init_pwm_controller(pid_controller_t *pid_handle, float kp, float ki, float kd, float curr_time_us);
+void pid_init(pid_controller_t *pid_handle, float kp, float ki, float kd, float curr_time_us);
 
-float calc_pid_out(pid_controller_t *pid_handle, float stpt, float meas, float curr_time_us);
+float pid_step(pid_controller_t *pid_handle, float stpt, float meas, float curr_time_us);
 
 #endif

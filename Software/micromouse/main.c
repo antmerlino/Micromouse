@@ -13,6 +13,9 @@
 #include <system.h>
 
 #include "drivers/motor.h"
+#include "drivers/ir_sensor.h"
+#include "drivers/bluetooth.h"
+
 
 /*
  *  ======== main ========
@@ -20,9 +23,6 @@
 Int main(Void)
 {
 	system_init();
-
-	update_motor(LEFT_MOTOR, CW, 500);
-	update_motor(RIGHT_MOTOR, CW, 500);
 
     System_printf("Starting the example\nSystem provider is set to SysMin. "
                   "Halt the target and use ROV to view output.\n");

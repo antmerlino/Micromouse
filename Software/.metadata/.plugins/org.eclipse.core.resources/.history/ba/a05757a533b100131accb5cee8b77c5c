@@ -1,0 +1,29 @@
+/*
+ * control.c
+ *
+ *  Created on: Mar 21, 2014
+ *      Author: Anthony
+ */
+
+
+#include "control.c"
+#include "system.h"
+#include "drivers/motor.h"
+#include "drivers/ir_sensor.h"
+
+
+
+void drive_straight(){
+
+	update_motor()
+
+	while(1)
+
+	Semaphore_pend(sidepoll_sem_handle, BIOS_WAIT_FOREVER);
+
+
+
+
+
+
+}

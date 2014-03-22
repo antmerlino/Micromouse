@@ -10,7 +10,7 @@ static sys_time_t curr_time = {0,0,0,0};
 //Function definitions
 void timer_update (UArg inc_usec);
 
-void init_time_keeper(void) {
+void time_keeper_init(void) {
 	// Create a timer that this module will use
 	Timer_Params_init(&time_keeper_params);
 	time_keeper_params.arg = (UArg)MICROSECONDS_PER_UPDATE;

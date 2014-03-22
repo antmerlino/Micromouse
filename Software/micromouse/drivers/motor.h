@@ -76,7 +76,6 @@ void set_pulse_width(uint8_t motorIndex, uint32_t *uSec);
 
 void update_motor(motor_index_t index, motor_direction_t direction, uint16_t duty_tenths_perc);
 
-void set_pwm_state(bool isOn);
 
 
 #endif /* MOTOR_H_ */

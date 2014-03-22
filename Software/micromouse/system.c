@@ -6,16 +6,24 @@
  */
 #include <stdint.h>
 #include <stdbool.h>
-#include <ti/drivers/GPIO.h>
+#include <inc/hw_memmap.h>
+#include <inc/hw_types.h>
+#include <inc/hw_ints.h>
+#include <inc/hw_gpio.h>
+
 #include <driverlib/sysctl.h>
+
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/uart/UARTTiva.h>
+#include <ti/drivers/UART.h>
+
 
 #include "system.h"
 #include "drivers/motor.h"
-#include "drivers/ir_adc_sensor.h"
+#include "drivers/ir_sensor.h"
+#include "drivers/bluetooth.h"
+#include "drivers/control.h"
 
-/* Callback functions for the GPIO interrupt example. */
-Void gpioButtonFxn0(Void);
-Void gpioButtonFxn1(Void);
 
 /* GPIO configuration structure */
 const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
@@ -24,16 +32,13 @@ const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
     {GPIO_PORTA_BASE, GPIO_PIN_5, GPIO_OUTPUT}, /* RIGHT_MOTOR_DIR_1 */
     {GPIO_PORTA_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* RIGHT_MOTOR_DIR_2 */
     {GPIO_PORTA_BASE, GPIO_PIN_4, GPIO_OUTPUT}, /* STBY_MOTOR */
+    {GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_OUTPUT}, /* IR_SIDE_1 */
+	{GPIO_PORTD_BASE, GPIO_PIN_4, GPIO_OUTPUT}, /* IR_SIDE_2 */
+	{GPIO_PORTB_BASE, GPIO_PIN_7, GPIO_OUTPUT}, /* IR_DIAG_LEFT */
+	{GPIO_PORTD_BASE, GPIO_PIN_5, GPIO_OUTPUT}, /* IR_DIAG_RIGHT */
+	{GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_LEFT */
+	{GPIO_PORTD_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_RIGHT */
 };
-
-/* Memory for the GPIO module to construct a Hwi */
-//Hwi_Struct callbackHwi;
-
-/* GPIO callback structure to set callbacks for GPIO interrupts */
-//const GPIO_Callbacks EK_TM4C123GXL_gpioPortFCallbacks = {
-//    GPIO_PORTF_BASE, INT_GPIOF, &callbackHwi,
-//    {gpioButtonFxn1, NULL, NULL, NULL, gpioButtonFxn0, NULL, NULL, NULL}
-//};
 
 const GPIO_Config GPIO_config[] = {
     {&gpioHWAttrs[0]},
@@ -41,7 +46,42 @@ const GPIO_Config GPIO_config[] = {
     {&gpioHWAttrs[2]},
     {&gpioHWAttrs[3]},
     {&gpioHWAttrs[4]},
+    {&gpioHWAttrs[5]},
+    {&gpioHWAttrs[6]},
+    {&gpioHWAttrs[7]},
+    {&gpioHWAttrs[8]},
+    {&gpioHWAttrs[9]},
+    {&gpioHWAttrs[10]},
     {NULL},
+};
+
+/* UART objects */
+UARTTiva_Object uartTivaObjects[MICROMOUSE_UARTCOUNT];
+
+/* UART configuration structure */
+const UARTTiva_HWAttrs uartTivaHWAttrs[MICROMOUSE_UARTCOUNT] = {
+    //{UART0_BASE, INT_UART0}, /* MICROMOUSEL_UART0 */
+    //{UART3_BASE, INT_UART3},  /* DEBUG - UART3 */
+    {UART4_BASE, INT_UART4}  /* BLUETOOTH - UART4 */
+};
+
+const UART_Config UART_config[] = {
+//    { // UART0
+//	&UARTTiva_fxnTable,
+//	&uartTivaObjects[0],
+//	&uartTivaHWAttrs[0]
+//    },
+//    { // UART3
+//	&UARTTiva_fxnTable,
+//	&uartTivaObjects[1],
+//	&uartTivaHWAttrs[1]
+//    },
+    { // UART4
+	&UARTTiva_fxnTable,
+	&uartTivaObjects[0],
+	&uartTivaHWAttrs[0]
+    },
+    {NULL, NULL, NULL}
 };
 
 void system_init(){
@@ -61,8 +101,28 @@ void system_init(){
 #endif
 
 #ifdef IR_ADC_SENSORS_ENABLE
-    ir_adc_sensor_init();
+    ir_sensor_init();
 #endif
+
+#ifdef BLUETOOTH_ENABLE
+    bluetooth_init();
+#endif
+
+#ifdef DEBUG_ENABLE
+//INITIALIZE DEBUG
+#endif
+
+	UART_init();
+
+#ifdef BLUETOOTH_ENABLE
+    bluetooth_open();
+#endif
+
+#ifdef DEBUG_ENABLE
+//OPEN DEBUG
+#endif
+
+    control_init();
 
     GPIO_init();
 

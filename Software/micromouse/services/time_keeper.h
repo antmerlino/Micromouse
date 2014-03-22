@@ -15,7 +15,7 @@ typedef struct sys_time_t {
 
 typedef sys_time_t* sys_time_handle;
 
-void init_time_keeper(void);
+void time_keeper_init(void);
 
 /**
  * Updates time_handle with the current time.

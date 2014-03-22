@@ -1,0 +1,19 @@
+/*
+ * bluesmirf.h
+ *
+ *  Created on: Mar 21, 2014
+ *      Author: Anthony
+ */
+
+#ifndef BLUESMIRF_H_
+#define BLUESMIRF_H_
+
+
+void initBlueSmirf();
+
+void sendSmirfPacket(char *data, int len) ;
+
+void getPacketFromSmirf(char *data, int len);
+
+
+#endif /* BLUESMIRF_H_ */

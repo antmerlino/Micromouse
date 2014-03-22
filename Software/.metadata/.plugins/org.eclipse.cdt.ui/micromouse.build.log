@@ -2,16 +2,6 @@
 **** Build of configuration Debug for project micromouse ****
 
 "C:\\ti\\ccsv5\\utils\\bin\\gmake" -k all 
-'Building file: ../drivers/motor.c'
-'Invoking: ARM Compiler'
-"C:/ti/ccsv5/tools/compiler/arm_5.1.1/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me --include_path="C:/ti/ccsv5/tools/compiler/arm_5.1.1/include" --include_path="F:/Projects/Micromouse/Software/micromouse" --include_path="C:/ti/tirtos_1_21_00_09/products/TivaWare_C_Series-2.0.1.11577a" -g --gcc --define=PART_TM4C123GH6PM --define=ccs --define=TIVAWARE --diag_warning=225 --display_error_number --diag_wrap=off --gen_func_subsections=on --preproc_with_compile --preproc_dependency="drivers/motor.pp" --obj_directory="drivers" --cmd_file="./configPkg/compiler.opt"  "../drivers/motor.c"
-'Finished building: ../drivers/motor.c'
-' '
-'Building target: micromouse.out'
-'Invoking: ARM Linker'
-"C:/ti/ccsv5/tools/compiler/arm_5.1.1/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=PART_TM4C123GH6PM --define=ccs --define=TIVAWARE --diag_warning=225 --display_error_number --diag_wrap=off --gen_func_subsections=on -z -m"micromouse.map" -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/lib" -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="micromouse_linkInfo.xml" --rom_model -o "micromouse.out" -l"./configPkg/linker.cmd"  "./drivers/motor.obj" "./services/time_keeper.obj" "./services/pid.obj" "./system.obj" "./main.obj" "../micromouse.cmd" -l"libc.a" -l"C:/ti/tirtos_1_21_00_09/products/TivaWare_C_Series-2.0.1.11577a/driverlib/ccs/Debug/driverlib.lib" -l"C:/ti/tirtos_1_21_00_09/products/TivaWare_C_Series-2.0.1.11577a/usblib/ccs/Debug/usblib.lib" 
-<Linking>
-'Finished building target: micromouse.out'
-' '
+gmake: Nothing to be done for `all'.
 
 **** Build Finished ****
