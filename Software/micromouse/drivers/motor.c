@@ -37,7 +37,7 @@ void motors_init(void) {
 	// Configure the pin for standby control
 	GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
 
-
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_64);
 	// Configure the PWM for each pin:
 	// Turn on the generators and set the PW to 0
 	// The output is still OFF. Turn on with set_motor_pwm_state

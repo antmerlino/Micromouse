@@ -10,11 +10,13 @@
 
 #define SETPOINT 0
 
-#define KP .00001
-#define KI 0
-#define KD 0
-
 void drive_straight();
 void control_init();
+
+// UART Callbavks
+void set_pid_kp(char* val);
+void set_pid_ki(char* val);
+void set_pid_kd(char* val);
+void set_motor_speed(char* val);
 
 #endif /* CONTROL_H_ */
