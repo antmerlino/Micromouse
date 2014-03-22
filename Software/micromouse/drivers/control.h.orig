@@ -10,6 +10,15 @@
 
 #define SETPOINT 0
 
+<<<<<<< HEAD
+#define KP 20
+#define KI 2
+#define KD 2
+
+#define SPEED 200
+
+=======
+>>>>>>> origin/master
 void drive_straight();
 void control_init();
 

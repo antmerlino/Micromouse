@@ -8,14 +8,31 @@
 #ifndef BLUETOOTH_H_
 #define BLUETOOTH_H_
 
+#include "drivers/control.h"
+#include "drivers/ir_sensor.h"
+
+
+typedef struct fun_ptr_t {
+	char func_name[16];
+	void (*funcptr)(char* val);
+} fun_ptr_t;
+
+void uart_ctrl(char* val);
+
+#define NUM_REG_FUNCS 6
+static fun_ptr_t reg_funcs[NUM_REG_FUNCS] = {
+	{"str_pid_kp",set_pid_kp},
+	{"str_pid_ki",set_pid_ki},
+	{"str_pid_kd",set_pid_kd},
+	{"motor_speed",set_motor_speed},
+	{"stream_ir_vals",stream_ir},
+	{"uart_ctrl", uart_ctrl}
+};
 
 void bluetooth_init();
 
 void bluetooth_open();
 
-void bluetooth_transmit(char *data, int len) ;
-
-void bluetooth_receive(char *data, int len);
-
+int bluetooth_transmit(Char *data, int len);
 
 #endif /* BLUETOOTH_H_ */

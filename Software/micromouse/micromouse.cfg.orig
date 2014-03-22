@@ -54,8 +54,8 @@ var HeapMem = xdc.useModule('ti.sysbios.heaps.HeapMem');
 
 /* ================ System configuration ================ */
 var SysMin = xdc.useModule('xdc.runtime.SysMin');
-var Boot = xdc.useModule('ti.catalog.arm.cortexm4.tiva.ce.Boot');
 var UART = xdc.useModule('ti.drivers.UART');
+var Boot = xdc.useModule('ti.catalog.arm.cortexm4.tiva.ce.Boot');
 System.SupportProxy = SysMin;
 
 /* ================ Logging configuration ================ */
@@ -86,10 +86,15 @@ task0Params.priority = 8;
 task0Params.arg0 = null;
 task0Params.arg1 = null;
 Program.global.drive_straight_tsk = Task.create("&drive_straight", task0Params);
+<<<<<<< HEAD
 UART.libType = UART.LibType_Instrumented;
 Boot.pllOutEnable = true;
+Boot.pwmClockDiv = Boot.PWMDIV_64;
+=======
+UART.libType = UART.LibType_NonInstrumented;
 Boot.pwmClockDiv = Boot.PWMDIV_64;
 var task1Params = new Task.Params();
 task1Params.instance.name = "bt_rx_task";
 task1Params.priority = 10;
 Program.global.bt_rx_task = Task.create("&bluetooth_rx_task", task1Params);
+>>>>>>> origin/master

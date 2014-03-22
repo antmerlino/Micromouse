@@ -4,7 +4,10 @@
  *  Created on: Mar 21, 2014
  *      Author: Anthony
  */
-
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include <ti/sysbios/family/arm/m3/Hwi.h>
 #include <ti/sysbios/knl/Task.h>
@@ -14,11 +17,21 @@
 #include "control.h"
 #include "system.h"
 #include "drivers/motor.h"
+#include "drivers/bluetooth.h"
 #include "drivers/ir_sensor.h"
 #include "services/pid.h"
 #include "services/time_keeper.h"
 
+#include <xdc/runtime/System.h>
 
+typedef struct straight_pid_params_t {
+	float kp;
+	float ki;
+	float kd;
+	uint32_t motor_speed;
+}straight_pid_params_t;
+
+straight_pid_params_t straight_control_params = {.00001, 0, 0, 500};
 
 Semaphore_Handle drive_straight_sem_handle;
 Semaphore_Params drive_straight_sem_params;
@@ -27,8 +40,8 @@ pid_controller_t side_pid;
 
 void drive_straight(){
 
-	update_motor(RIGHT_MOTOR, CCW, SPEED);
-	update_motor(LEFT_MOTOR, CW, SPEED);
+	update_motor(RIGHT_MOTOR, CCW, straight_control_params.motor_speed);
+	update_motor(LEFT_MOTOR, CW, straight_control_params.motor_speed);
 
 	side_ir_data_t side_data;
 	uint32_t left_avg;
@@ -77,14 +90,50 @@ void drive_straight(){
 void control_init(){
 
 	time_keeper_init();
-	pid_init(&side_pid, KP, KI, KD, (float)get_curr_time_us());
+	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 
 	Semaphore_Params_init(&drive_straight_sem_params);
 	drive_straight_sem_params.mode = Semaphore_Mode_BINARY;
 	drive_straight_sem_handle = Semaphore_create(0, &drive_straight_sem_params, NULL);
 }
 
+void set_pid_kp(char* val) {
+	char buf[64];
+	uint32_t val_int = atoi(val);
+	straight_control_params.kp = val_int/10.0;
+	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
+	uint8_t len = sprintf(buf, "Straight PID KP set to: %3f\r\n", straight_control_params.kp);
+	bluetooth_transmit(buf, len);
+}
 
+void set_pid_ki(char* val) {
+	char buf[64];
+	uint32_t val_int = atoi(val);
+	straight_control_params.ki = val_int/10.0;
+	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
+
+	uint8_t len = sprintf(buf, "Straight PID KI set to: %3f\r\n", straight_control_params.ki);
+	bluetooth_transmit(buf, len);
+}
+
+void set_pid_kd(char* val) {
+	char buf[64];
+	uint32_t val_int = atoi(val);
+	straight_control_params.kd = val_int/10.0;
+	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
+
+	uint8_t len = sprintf(buf, "Straight PID KD set to: %3f\r\n", straight_control_params.kd);
+	bluetooth_transmit(buf, len);
+}
+
+void set_motor_speed(char* val) {
+	char buf[64];
+	straight_control_params.motor_speed = atoi(val);
+	update_motor(RIGHT_MOTOR, CCW, straight_control_params.motor_speed);
+	update_motor(LEFT_MOTOR, CW, straight_control_params.motor_speed);
+	uint8_t len = sprintf(buf, "Motors set to: %i\r\n", straight_control_params.motor_speed);
+	bluetooth_transmit(buf, len);
+}
 
 void drive_straight_resume(void){
 	// Resume the task

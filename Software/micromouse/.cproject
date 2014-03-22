@@ -98,6 +98,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="micromouse.cfg.REMOTE.4844.cfg|micromouse.cfg.LOCAL.4844.cfg|micromouse.cfg.BASE.4844.cfg|micromouse.cfg.BACKUP.4844.cfg" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -195,6 +198,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="micromouse.cfg.REMOTE.4844.cfg|micromouse.cfg.LOCAL.4844.cfg|micromouse.cfg.BASE.4844.cfg|micromouse.cfg.BACKUP.4844.cfg" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

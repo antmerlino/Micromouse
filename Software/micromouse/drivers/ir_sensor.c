@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <inc/hw_memmap.h>
 #include <driverlib/gpio.h>
 #include <driverlib/pin_map.h>
@@ -17,11 +19,19 @@
 #include "drivers/bluetooth.h"
 #include <ti/drivers/GPIO.h>
 
+/* XDCtools Header files */
+#include <xdc/std.h>
+#include <xdc/cfg/global.h>
+#include <xdc/runtime/System.h>
+
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss1_hwi;
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss2_hwi;
 
 Hwi_Params adc0ss1_params;
 Hwi_Params adc0ss2_params;
+
+char spf_buf[80];
+bool stream_buf = false;
 
 void side_poll(side_ir_data_t * side_ir_data){
 
@@ -65,9 +75,22 @@ void side_poll(side_ir_data_t * side_ir_data){
 		// Read ADC Value
 		ADCSequenceDataGet(ADC0_BASE, 2, &(side_ir_data->right_front));
 
-		//bluetooth_transmit(&(side_ir_data.left_front_char[0]), 16);
+		if(stream_buf){
+			int len = sprintf(spf_buf, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", side_ir_data->left_front, side_ir_data->right_front, side_ir_data->left_back, side_ir_data->right_back);
+			bluetooth_transmit(spf_buf, len);
+		}
+}
 
-
+void stream_ir(char* val) {
+	if(strcmp(val, "ON") == 0) {
+		stream_buf = true;
+	} else {
+		if(strcmp(val, "OFF") == 0) {
+			stream_buf = false;
+		} else {
+			bluetooth_transmit("Invalid IR Stream Value! ON or OFF\r\n", 36);
+		}
+	}
 }
 
 
