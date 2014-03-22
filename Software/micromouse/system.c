@@ -13,7 +13,6 @@
 
 #include <driverlib/sysctl.h>
 
-#include <ti/drivers/GPIO.h>
 #include <ti/drivers/uart/UARTTiva.h>
 #include <ti/drivers/UART.h>
 
@@ -23,7 +22,6 @@
 #include "drivers/ir_sensor.h"
 #include "drivers/bluetooth.h"
 #include "drivers/control.h"
-
 
 /* GPIO configuration structure */
 const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
@@ -38,6 +36,13 @@ const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
 	{GPIO_PORTD_BASE, GPIO_PIN_5, GPIO_OUTPUT}, /* IR_DIAG_RIGHT */
 	{GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_LEFT */
 	{GPIO_PORTD_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_RIGHT */
+	{GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INPUT}   /*INPUT_CTRL_SWITCH */
+};
+
+Hwi_Struct portACallbackHwi;
+const GPIO_Callbacks portACallbacks = {
+	GPIO_PORTA_BASE, INT_GPIOA, &portACallbackHwi,
+	{NULL, ctrlSwitchFxn, NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
 const GPIO_Config GPIO_config[] = {
@@ -52,6 +57,7 @@ const GPIO_Config GPIO_config[] = {
     {&gpioHWAttrs[8]},
     {&gpioHWAttrs[9]},
     {&gpioHWAttrs[10]},
+    {&gpioHWAttrs[11]},
     {NULL},
 };
 
@@ -126,4 +132,7 @@ void system_init(){
 
     GPIO_init();
 
+    control_open();
+
+    GPIO_setupCallbacks(&portACallbacks); // Setup interrupts
 }
