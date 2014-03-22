@@ -44,6 +44,8 @@ Semaphore_Params drive_straight_sem_params;
 
 pid_controller_t side_pid;
 
+bool stop_control_loop = true;
+
 void drive_straight(){
 
 	side_ir_data_t side_data;
@@ -145,11 +147,17 @@ void set_motor_speed(char* val) {
 }
 
 void drive_straight_resume(void){
-	// Resume the task
-	Semaphore_post(drive_straight_sem_handle);
+	if(!stop_control_loop){
+		// Resume the task
+		Semaphore_post(drive_straight_sem_handle);
+	} else {
+		update_motor(LEFT_MOTOR, CW, 0);
+		update_motor(RIGHT_MOTOR, CCW, 0);
+		pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
+	}
 }
 
 void ctrlSwitchFxn(void) {
-	// Insert Code For Switch Here
+	stop_control_loop = (stop_control_loop == true) ? false: true;
 	GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_1);
 }
