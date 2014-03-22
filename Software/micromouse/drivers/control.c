@@ -27,8 +27,8 @@ pid_controller_t side_pid;
 
 void drive_straight(){
 
-	update_motor(RIGHT_MOTOR, CCW, 500);
-	update_motor(LEFT_MOTOR, CW, 500);
+	update_motor(RIGHT_MOTOR, CCW, SPEED);
+	update_motor(LEFT_MOTOR, CW, SPEED);
 
 	side_ir_data_t side_data;
 	uint32_t left_avg;
@@ -36,8 +36,9 @@ void drive_straight(){
 	int32_t side_diff;
 
 	float motor_diff;
-	int16_t right_motor_out = 1;
-	int16_t left_motor_out = 1;
+
+	int16_t right_motor_out;
+	int16_t left_motor_out;
 
 
 	while(1){
@@ -53,25 +54,22 @@ void drive_straight(){
 
 		motor_diff = pid_step(&side_pid, SETPOINT, (float)side_diff, (float)get_curr_time_us())/100;
 
-		right_motor_out -= motor_diff/2;
-		left_motor_out += motor_diff/2;
+		right_motor_out = SPEED + motor_diff/2;
+		left_motor_out = SPEED - motor_diff/2;
 
-//		if(right_motor_out < 0){
-//			update_motor(RIGHT_MOTOR, CW, -1*right_motor_out);
-//		}
-//		else{
-//			update_motor(RIGHT_MOTOR, CCW, right_motor_out);
-//		}
-//
-//		if(left_motor_out < 0){
-//			update_motor(LEFT_MOTOR, CCW, -1*left_motor_out);
-//		}
-//		else{
-//			update_motor(LEFT_MOTOR, CW, left_motor_out);
-//		}
+		if(right_motor_out < 0){
+			update_motor(RIGHT_MOTOR, CW, -1*right_motor_out);
+		}
+		else{
+			update_motor(RIGHT_MOTOR, CCW, right_motor_out);
+		}
 
-
-
+		if(left_motor_out < 0){
+			update_motor(LEFT_MOTOR, CCW, -1*left_motor_out);
+		}
+		else{
+			update_motor(LEFT_MOTOR, CW, left_motor_out);
+		}
 	}
 
 }

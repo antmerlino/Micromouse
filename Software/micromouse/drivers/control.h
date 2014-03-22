@@ -10,9 +10,11 @@
 
 #define SETPOINT 0
 
-#define KP .00001
-#define KI 0
-#define KD 0
+#define KP 20
+#define KI 2
+#define KD 2
+
+#define SPEED 200
 
 void drive_straight();
 void control_init();

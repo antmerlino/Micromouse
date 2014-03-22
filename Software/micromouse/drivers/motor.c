@@ -37,7 +37,7 @@ void motors_init(void) {
 	// Configure the pin for standby control
 	GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
 
-
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_64);
 	// Configure the PWM for each pin:
 	// Turn on the generators and set the PW to 0
 	// The output is still OFF. Turn on with set_motor_pwm_state
@@ -91,9 +91,18 @@ void update_motor(motor_index_t index, motor_direction_t direction, uint16_t dut
 void set_pulse_width(motor_index_t index, uint32_t *uSec) {
 	uint32_t cycles = calc_cycles(*uSec);
 
+	uint8_t pin_mask;
 	// set uSec as closest value as possible with Timer settings
 	*uSec = calc_usec(cycles);
+	pin_mask = 1 << (0x0000000F & motors[index].pwm_pin);
 
-	PWMPulseWidthSet(motors[index].pwm_base_module, motors[index].pwm_pin, cycles);
+	if(cycles <= 0){
+		PWMOutputState(motors[index].pwm_base_module, pin_mask, 0);
+	}
+	else{
+		PWMOutputState(motors[index].pwm_base_module, pin_mask, 1);
+		PWMPulseWidthSet(motors[index].pwm_base_module, motors[index].pwm_pin, cycles);
+	}
+
 }
 

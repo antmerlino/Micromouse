@@ -21,7 +21,7 @@
 
 #define PWM_TIMER_FREQ (CLK_FREQ/PWM_CLK_DIV) // Hz
 // NOTE: About 52000 us is the high limit for period!
-#define MOTOR_PERIOD 50000
+#define MOTOR_PERIOD 10000
 
 // Holds PWM information for each motor
 typedef struct {
