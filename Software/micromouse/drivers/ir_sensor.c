@@ -82,13 +82,13 @@ void side_poll(side_ir_data_t * side_ir_data){
 }
 
 void stream_ir(char* val) {
-	if(strcmp(val, "ON") == 0) {
+	if(strcmp(val, "on") == 0) {
 		stream_buf = true;
 	} else {
-		if(strcmp(val, "OFF") == 0) {
+		if(strcmp(val, "off") == 0) {
 			stream_buf = false;
 		} else {
-			bluetooth_transmit("Invalid IR Stream Value! ON or OFF\r\n", 36);
+			bluetooth_transmit("Invalid IR Stream Value! 'on' or 'off'\r\n", 36);
 		}
 	}
 }

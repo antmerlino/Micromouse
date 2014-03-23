@@ -19,6 +19,7 @@ void set_pid_kp(char* val);
 void set_pid_ki(char* val);
 void set_pid_kd(char* val);
 void set_motor_speed(char* val);
+void toggle_ctrl_sys(char* val);
 
 // Switch HWI
 void ctrlSwitchFxn(void);
