@@ -146,6 +146,10 @@ void set_motor_speed(char* val) {
 	bluetooth_transmit(buf, len);
 }
 
+void toggle_ctrl_sys(char* val) {
+	ctrlSwitchFxn();
+}
+
 void drive_straight_resume(void){
 	if(!stop_control_loop){
 		// Resume the task

@@ -19,16 +19,17 @@ typedef struct fun_ptr_t {
 
 void uart_ctrl(char* val);
 
-#define NUM_REG_FUNCS 6
+#define NUM_REG_FUNCS 7
 static fun_ptr_t reg_funcs[NUM_REG_FUNCS] = {
 	{"str_pid_kp",set_pid_kp},
 	{"str_pid_ki",set_pid_ki},
 	{"str_pid_kd",set_pid_kd},
 	{"motor_speed",set_motor_speed},
-	{"stream_ir_vals",stream_ir},
-	{"uart_ctrl", uart_ctrl}
+	{"stream_ir",stream_ir},
+	{"uart_ctrl", uart_ctrl},
+	{"tog", toggle_ctrl_sys}
 };
-
+toggle_ctrl_sys
 void bluetooth_init();
 
 void bluetooth_open();
