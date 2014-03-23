@@ -8,6 +8,9 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
+#include <ti/drivers/GPIO.h>
+#include <ti/sysbios/family/arm/m3/Hwi.h>
+
 #define OFF (0)
 #define ON (~0)
 
@@ -23,7 +26,7 @@ typedef enum micromouse_gpio_name{
 	IR_DIAG_RIGHT,
 	IR_FRONT_LEFT,
 	IR_FRONT_RIGHT,
-
+	INPUT_CTRL_SWITCH,
 
 	MICROMOUSE_GPIO_COUNT
 } micromouse_gpio_name_t;
@@ -36,6 +39,8 @@ typedef enum micromouse_uart_name {
     MICROMOUSE_UARTCOUNT
 } micromouse_uart_name_t;
 
+extern Hwi_Struct portACallbackHwi;
+extern const GPIO_Callbacks portACallbacks;
 
 /**
  * Enable Flags for System Peripherals, Drivers, and Services
