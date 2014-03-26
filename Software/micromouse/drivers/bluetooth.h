@@ -10,6 +10,7 @@
 
 #include "drivers/control.h"
 #include "drivers/ir_sensor.h"
+#include "drivers/encoder.h"
 
 
 typedef struct fun_ptr_t {
@@ -19,7 +20,7 @@ typedef struct fun_ptr_t {
 
 void uart_ctrl(char* val);
 
-#define NUM_REG_FUNCS 7
+#define NUM_REG_FUNCS 9
 static fun_ptr_t reg_funcs[NUM_REG_FUNCS] = {
 	{"str_pid_kp",set_pid_kp},
 	{"str_pid_ki",set_pid_ki},
@@ -27,9 +28,10 @@ static fun_ptr_t reg_funcs[NUM_REG_FUNCS] = {
 	{"motor_speed",set_motor_speed},
 	{"stream_ir",stream_ir},
 	{"uart_ctrl", uart_ctrl},
-	{"tog", toggle_ctrl_sys}
+	{"tog", toggle_ctrl_sys},
+	{"ir_duty", update_ir_duty},
+	{"stream_encoder", stream_encoder}
 };
-toggle_ctrl_sys
 void bluetooth_init();
 
 void bluetooth_open();

@@ -22,6 +22,7 @@
 #include "drivers/ir_sensor.h"
 #include "drivers/bluetooth.h"
 #include "drivers/control.h"
+#include "drivers/encoder.h"
 
 /* GPIO configuration structure */
 const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
@@ -108,6 +109,10 @@ void system_init(){
 
 #ifdef IR_ADC_SENSORS_ENABLE
     ir_sensor_init();
+#endif
+
+#ifdef ENCODER_ENABLE
+    encoder_init();
 #endif
 
 #ifdef BLUETOOTH_ENABLE

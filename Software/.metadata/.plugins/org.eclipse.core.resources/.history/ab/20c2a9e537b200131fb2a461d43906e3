@@ -1,0 +1,17 @@
+/*
+ * encoder.h
+ *
+ *  Created on: Mar 22, 2014
+ *      Author: Anthony
+ */
+
+#ifndef ENCODER_H_
+#define ENCODER_H_
+
+#define ADC0_MAX_LOW 993	// 0.8V
+#define ADC0_MAX_HIGH 1490	// 1.2V
+
+void encoder_init();
+
+
+#endif /* ENCODER_H_ */

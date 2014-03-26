@@ -24,6 +24,8 @@
 #include <xdc/cfg/global.h>
 #include <xdc/runtime/System.h>
 
+#define MAX_IR_DUTY 10
+
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss1_hwi;
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss2_hwi;
 
@@ -32,6 +34,7 @@ Hwi_Params adc0ss2_params;
 
 char spf_buf[80];
 bool stream_buf = false;
+uint8_t ir_duty = 5;
 
 void side_poll(side_ir_data_t * side_ir_data){
 
@@ -39,7 +42,7 @@ void side_poll(side_ir_data_t * side_ir_data){
 		GPIO_write(IR_SIDE_1, ON);
 
 		// Sleep so the LED can turn on
-		Task_sleep(5);
+		Task_sleep(ir_duty);
 
 		// Trigger ADC0 SS1
 		ADCProcessorTrigger(ADC0_BASE, 1);
@@ -55,11 +58,14 @@ void side_poll(side_ir_data_t * side_ir_data){
 		// Read ADC Value
 		ADCSequenceDataGet(ADC0_BASE, 1, &(side_ir_data->left_front));
 
+		// Sleep so the LED can turn on
+		Task_sleep(1);
+
 		// Turn on the LEDs
 		GPIO_write(IR_SIDE_2, ON);
 
 		// Sleep so the LED can turn on
-		Task_sleep(5);
+		Task_sleep(ir_duty);
 
 		// Trigger ADC0 SS1
 		ADCProcessorTrigger(ADC0_BASE, 2);
@@ -74,6 +80,12 @@ void side_poll(side_ir_data_t * side_ir_data){
 
 		// Read ADC Value
 		ADCSequenceDataGet(ADC0_BASE, 2, &(side_ir_data->right_front));
+
+		// Adjust the value for setpoints
+		side_ir_data->left_back += LB_OFFSET;
+		side_ir_data->right_back += RB_OFFSET;
+		side_ir_data->left_front += LF_OFFSET;
+		side_ir_data->right_front += RF_OFFSET;
 
 		if(stream_buf){
 			int len = sprintf(spf_buf, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", side_ir_data->left_front, side_ir_data->right_front, side_ir_data->left_back, side_ir_data->right_back);
@@ -125,11 +137,11 @@ void ir_sensor_init(void) {
 	 * the RIGHT_BACK (PB5 - CH11)
 	 *
 	 */
-	ADCSequenceConfigure(ADC0_BASE, 1, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSequenceConfigure(ADC0_BASE, 1, ADC_TRIGGER_PROCESSOR, 1);
 	ADCSequenceStepConfigure(ADC0_BASE, 1, 0, ADC_CTL_CH5);
 	ADCSequenceStepConfigure(ADC0_BASE, 1, 1, ADC_CTL_CH11|ADC_CTL_END | ADC_CTL_IE);
 	ADCSequenceEnable(ADC0_BASE, 1);
-	//ADCHardwareOversampleConfigure(ADC0_BASE, 16);
+	//ADCHardwareOversampleConfigure(ADC0_BASE, 8);
 
 
 	/**
@@ -140,10 +152,24 @@ void ir_sensor_init(void) {
 	 * the LEFT_BACK (PD3 - CH4)
 	 *
 	 */
-	ADCSequenceConfigure(ADC0_BASE, 2, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSequenceConfigure(ADC0_BASE, 2, ADC_TRIGGER_PROCESSOR, 2);
 	ADCSequenceStepConfigure(ADC0_BASE, 2, 0, ADC_CTL_CH10);
 	ADCSequenceStepConfigure(ADC0_BASE, 2, 1, ADC_CTL_CH4|ADC_CTL_END | ADC_CTL_IE);
 	ADCSequenceEnable(ADC0_BASE, 2);
+
+}
+
+void update_ir_duty(char * value){
+
+	uint8_t valint;
+	valint = atoi(value);
+
+	if(valint > MAX_IR_DUTY){
+		ir_duty = MAX_IR_DUTY;
+	}
+	else{
+		ir_duty = valint;
+	}
 
 }
 

@@ -48,7 +48,7 @@ void motors_init(void) {
 		PWMPulseWidthSet(motors[i].pwm_base_module, motors[i].pwm_pin, 0);
 		PWMGenEnable(motors[i].pwm_base_module, motors[i].pwm_generator);
 		pin_mask = 1 << (0x0000000F & motors[i].pwm_pin);
-		PWMOutputState(motors[i].pwm_base_module, pin_mask, 1);
+		PWMOutputState(motors[i].pwm_base_module, pin_mask, 0);
 	}
 
 }

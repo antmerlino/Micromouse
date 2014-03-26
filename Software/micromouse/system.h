@@ -51,6 +51,7 @@ extern const GPIO_Callbacks portACallbacks;
 #define BLUETOOTH_ENABLE
 #define DEBUG_ENABLE
 #define CONTROL_ENABLE
+#define ENCODER_ENABLE
 
 void system_init();
 
