@@ -27,6 +27,8 @@ typedef enum micromouse_gpio_name{
 	IR_FRONT_LEFT,
 	IR_FRONT_RIGHT,
 	INPUT_CTRL_SWITCH,
+	INPUT_ENCODER_R,
+	INPUT_ENCODER_L,
 
 	MICROMOUSE_GPIO_COUNT
 } micromouse_gpio_name_t;

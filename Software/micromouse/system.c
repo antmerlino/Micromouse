@@ -37,13 +37,21 @@ const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
 	{GPIO_PORTD_BASE, GPIO_PIN_5, GPIO_OUTPUT}, /* IR_DIAG_RIGHT */
 	{GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_LEFT */
 	{GPIO_PORTD_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_RIGHT */
-	{GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INPUT}   /*INPUT_CTRL_SWITCH */
+	{GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INPUT},  /*INPUT_CTRL_SWITCH */
+	{GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_INPUT},  /*INPUT_ENCODER_R */
+	{GPIO_PORTE_BASE, GPIO_PIN_3, GPIO_INPUT}   /*INPUT_ENCODER_L */
 };
 
 Hwi_Struct portACallbackHwi;
 const GPIO_Callbacks portACallbacks = {
 	GPIO_PORTA_BASE, INT_GPIOA, &portACallbackHwi,
 	{NULL, ctrlSwitchFxn, NULL, NULL, NULL, NULL, NULL, NULL}
+};
+
+Hwi_Struct portECallbackHwi;
+const GPIO_Callbacks portECallbacks = {
+	GPIO_PORTE_BASE, INT_GPIOE, &portECallbackHwi,
+	{NULL, right_encoder_count, NULL, left_encoder_count, NULL, NULL, NULL, NULL}
 };
 
 const GPIO_Config GPIO_config[] = {
@@ -138,6 +146,7 @@ void system_init(){
     GPIO_init();
 
     control_open();
+    encoder_open();
 
     GPIO_setupCallbacks(&portACallbacks); // Setup interrupts
 }

@@ -106,6 +106,10 @@ void encoder_init(){
 
 }
 
+void encoder_open() {
+	// Nothing here
+}
+
 
 void left_encoder_count(){
 

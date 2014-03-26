@@ -17,6 +17,7 @@
 
 
 void encoder_init();
+void encoder_open();
 void left_encoder_count();
 void right_encoder_count();
 void check_distance();
