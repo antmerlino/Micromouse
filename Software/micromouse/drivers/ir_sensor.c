@@ -26,6 +26,8 @@
 
 #define MAX_IR_DUTY 10
 
+#define AVG_DATA (adc_data[0] + adc_data[1])/2
+
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss1_hwi;
 ti_sysbios_family_arm_m3_Hwi_Struct adc0ss2_hwi;
 
@@ -34,7 +36,14 @@ Hwi_Params adc0ss2_params;
 
 char spf_buf[80];
 bool stream_buf = false;
-uint8_t ir_duty = 5;
+uint8_t ir_duty = 1;
+
+int16_t rb_offset = 0;
+int16_t rf_offset = 0;
+int16_t lf_offset = 0;
+int16_t lb_offset = 0;
+
+//uint16_t ir_centered;
 
 void side_poll(side_ir_data_t * side_ir_data){
 
@@ -52,14 +61,13 @@ void side_poll(side_ir_data_t * side_ir_data){
 		{
 		}
 
+		ADCIntClear(ADC0_BASE, 1);
+
 		// Turn off the IR LED
 		GPIO_write(IR_SIDE_1, OFF);
 
 		// Read ADC Value
 		ADCSequenceDataGet(ADC0_BASE, 1, &(side_ir_data->left_front));
-
-		// Sleep so the LED can turn on
-		Task_sleep(1);
 
 		// Turn on the LEDs
 		GPIO_write(IR_SIDE_2, ON);
@@ -74,6 +82,8 @@ void side_poll(side_ir_data_t * side_ir_data){
 		while(!ADCIntStatus(ADC0_BASE, 2, false))
 		{
 		}
+
+		ADCIntClear(ADC0_BASE, 2);
 
 		// Turn off the IR LED
 		GPIO_write(IR_SIDE_2, OFF);
@@ -93,6 +103,79 @@ void side_poll(side_ir_data_t * side_ir_data){
 		}
 }
 
+void check_walls(walls_t * walls, side_ir_data_t * side_data){
+
+	uint32_t adc_data[4];
+
+	walls->count++;
+
+	// Turn on the LEDs
+	GPIO_write(IR_FRONT_LEFT, ON);
+	GPIO_write(IR_FRONT_RIGHT, ON);
+
+	// Sleep so the LED can turn on
+	Task_sleep(ir_duty);
+
+	// Trigger ADC0 SS1
+	ADCProcessorTrigger(ADC1_BASE, 1);
+
+	// Wait until the sample sequence has completed.
+	while(!ADCIntStatus(ADC1_BASE, 1, false))
+	{
+	}
+
+	ADCIntClear(ADC1_BASE, 1);
+
+	// Turn off the IR LED
+	GPIO_write(IR_FRONT_LEFT, OFF);
+	//GPIO_write(IR_FRONT_RIGHT, OFF);
+
+	// Read ADC Value
+	ADCSequenceDataGet(ADC1_BASE, 1, &adc_data[0]);
+
+
+//	char spf_buf[80];
+//	int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
+//	bluetooth_transmit(spf_buf, len);
+
+//	if(AVG_DATA >= FRONT_THRESHOLD){
+	if(adc_data[0] >= FRONT_THRESHOLD){
+		walls->front_sum++;
+	}
+
+	if(walls->front_sum/walls->count > 0.5){
+		walls->flags.front = 1;
+	}
+	else{
+		walls->flags.front = 0;
+	}
+
+
+	if( side_data->left_front >= LEFT_THRESHOLD){
+		walls->left_sum++;
+	}
+
+	if(walls->left_sum/walls->count > 0.5){
+		walls->flags.left = 1;
+	}
+	else{
+		walls->flags.left = 0;
+	}
+
+	if( side_data->right_front >= RIGHT_THRESHOLD){
+		walls->right_sum++;
+	}
+
+	if(walls->right_sum/walls->count > 0.5){
+		walls->flags.right = 1;
+	}
+	else{
+		walls->flags.right = 0;
+
+	}
+
+}
+
 void stream_ir(char* val) {
 	if(strcmp(val, "on") == 0) {
 		stream_buf = true;
@@ -105,6 +188,51 @@ void stream_ir(char* val) {
 	}
 }
 
+//void calibrate_ir(){
+//
+//	uint32_t rb_sum = 0;
+//	uint32_t rf_sum = 0;
+//	uint32_t lb_sum = 0;
+//	uint32_t lf_sum = 0;
+//
+//	side_ir_data_t data;
+//
+//	rb_offset = 0;
+//	rf_offset = 0;
+//	lf_offset = 0;
+//	lb_offset = 0;
+//
+//	uint16_t i;
+//
+//	for(i = 0; i <= CALIBRATION_CYCLES; i++){
+//
+//		side_poll(&data);
+//
+//		rb_sum += data.right_back;
+//		rf_sum += data.right_front;
+//		lb_sum += data.left_back;
+//		lf_sum += data.left_front;
+//
+//		Task_sleep(5);
+//
+//	}
+//
+//	//ir_centered = (rb_sum + rf_sum + lb_sum + lf_sum)/(4*CALIBRATION_CYCLES);
+//
+//	rb_offset = IR_CENTERED - (rb_sum/CALIBRATION_CYCLES);
+//	rf_offset = IR_CENTERED - (rf_sum/CALIBRATION_CYCLES);
+//	lb_offset = IR_CENTERED - (lb_sum/CALIBRATION_CYCLES);
+//	lf_offset = IR_CENTERED - (lf_sum/CALIBRATION_CYCLES);
+//
+//	char spf_buf_calibration[80];
+//
+//	int len = sprintf(spf_buf_calibration, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", lf_sum/CALIBRATION_CYCLES,  rf_sum/CALIBRATION_CYCLES, lb_sum/CALIBRATION_CYCLES, rb_sum/CALIBRATION_CYCLES );
+//	bluetooth_transmit(spf_buf_calibration, len);
+//
+//	len = sprintf(spf_buf_calibration, "RB: %i, RF: %i, LB: %i, LF: %i, C: %i\r\n", rb_offset, rf_offset, lb_offset, lf_offset, ir_centered);
+//	bluetooth_transmit(spf_buf_calibration, len);
+//
+//}
 
 void ir_sensor_init(void) {
 
@@ -139,7 +267,8 @@ void ir_sensor_init(void) {
 	 */
 	ADCSequenceConfigure(ADC0_BASE, 1, ADC_TRIGGER_PROCESSOR, 1);
 	ADCSequenceStepConfigure(ADC0_BASE, 1, 0, ADC_CTL_CH5);
-	ADCSequenceStepConfigure(ADC0_BASE, 1, 1, ADC_CTL_CH11|ADC_CTL_END | ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC0_BASE, 1, 1, ADC_CTL_CH11| ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC0_BASE, 1, 2, ADC_CTL_CH7 | ADC_CTL_END);
 	ADCSequenceEnable(ADC0_BASE, 1);
 	//ADCHardwareOversampleConfigure(ADC0_BASE, 8);
 
@@ -152,11 +281,39 @@ void ir_sensor_init(void) {
 	 * the LEFT_BACK (PD3 - CH4)
 	 *
 	 */
-	ADCSequenceConfigure(ADC0_BASE, 2, ADC_TRIGGER_PROCESSOR, 2);
+	ADCSequenceConfigure(ADC0_BASE, 2, ADC_TRIGGER_PROCESSOR, 0);
 	ADCSequenceStepConfigure(ADC0_BASE, 2, 0, ADC_CTL_CH10);
-	ADCSequenceStepConfigure(ADC0_BASE, 2, 1, ADC_CTL_CH4|ADC_CTL_END | ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC0_BASE, 2, 1, ADC_CTL_CH4| ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC0_BASE, 2, 2, ADC_CTL_CH1 | ADC_CTL_END);
 	ADCSequenceEnable(ADC0_BASE, 2);
 
+	/**
+	 * Enable Sample Sequencer 1 on ADC1
+	 *
+	 * This Sample Sequencer will be used to sample the Front IR receivers
+	 * We will sample the FRONT_LEFT first (PD0 - CH7) and then sample
+	 * the FRONT_RIGHT (PE5 - CH8)
+	 *
+	 */
+	ADCSequenceConfigure(ADC1_BASE, 1, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSequenceStepConfigure(ADC1_BASE, 1, 0, ADC_CTL_CH7);
+	ADCSequenceStepConfigure(ADC1_BASE, 1, 1, ADC_CTL_CH8| ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC1_BASE, 1, 2, ADC_CTL_CH1 | ADC_CTL_END);
+	ADCSequenceEnable(ADC1_BASE, 1);
+
+	/**
+	 * Enable Sample Sequencer 2 on ADC1
+	 *
+	 * This Sample Sequencer will be used to sample the Diagnonal IR receivers
+	 * We will sample the IR_DIAGONAL_L first (PD1 - CH6) and then sample
+	 * the IR_DIAGONAL_R (PE4 - CH9)
+	 *
+	 */
+	ADCSequenceConfigure(ADC1_BASE, 2, ADC_TRIGGER_PROCESSOR, 1);
+	ADCSequenceStepConfigure(ADC1_BASE, 2, 0, ADC_CTL_CH6);
+	ADCSequenceStepConfigure(ADC1_BASE, 2, 1, ADC_CTL_CH9| ADC_CTL_IE);
+	ADCSequenceStepConfigure(ADC1_BASE, 2, 2, ADC_CTL_CH1 | ADC_CTL_END);
+	ADCSequenceEnable(ADC1_BASE, 2);
 }
 
 void update_ir_duty(char * value){

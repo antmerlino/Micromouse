@@ -1,8 +1,0 @@
-#ifndef IR_ADC_SENSOR_H
-#define IR_ADC_SENSOR_H
-
-
-void ir_sensor_init(void);
-void side_poll(UArg arg0);
-
-#endif

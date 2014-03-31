@@ -8,13 +8,11 @@
 #ifndef ENCODER_H_
 #define ENCODER_H_
 
-#define ENCODER_MAX_LOW 993	// 0.8V
-#define ENCODER_MAX_HIGH 1490	// 1.2V
+#define ENCODER_MAX_LOW 400
+#define ENCODER_MAX_HIGH 1600
 
-#define NUMTICKS_PER_BLOCK 500
-#define WALL_CHECK_ZONE 50
-
-
+extern uint32_t left_motor_ticks;
+extern uint32_t right_motor_ticks;
 
 void encoder_init();
 void encoder_open();

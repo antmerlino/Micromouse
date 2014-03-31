@@ -9,10 +9,31 @@
 #define CONTROL_H_
 
 #define SETPOINT 0
+#define TURN_SPEED 100
 
+#define INITIAL_WALLS 0x07
 
+#define NUMTICKS_PER_BLOCK 300
+#define NUMTICKS_FULL_TURN 220
+#define NUMTICKS_HALF_TURN 100
+#define WALL_CHECK_ZONE 125
 
-void drive_straight();
+#define ENCODER_SCALE 50
+
+#define COMP_HIGH 0.7
+#define COMP_LOW 1-COMP_HIGH
+
+typedef enum {
+	RESET = -1,
+	STRAIGHT,
+	TURN_RIGHT,
+	TURN_AROUND,
+	TURN_LEFT,
+	START,
+
+} control_state_t;
+
+void control_loop();
 void control_init();
 void control_open();
 
@@ -22,6 +43,11 @@ void set_pid_ki(char* val);
 void set_pid_kd(char* val);
 void set_motor_speed(char* val);
 void toggle_ctrl_sys(char* val);
+void stream_walls(char* val);
+void stream_motor(char* val);
+void stream_control(char* val);
+void move_delay_tog(char* val);
+
 
 // Switch HWI
 void ctrlSwitchFxn(void);

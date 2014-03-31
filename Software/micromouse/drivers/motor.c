@@ -87,7 +87,6 @@ void update_motor(motor_index_t index, motor_direction_t direction, uint16_t dut
 
 }
 
-
 void set_pulse_width(motor_index_t index, uint32_t *uSec) {
 	uint32_t cycles = calc_cycles(*uSec);
 

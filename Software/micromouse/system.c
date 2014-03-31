@@ -23,6 +23,7 @@
 #include "drivers/bluetooth.h"
 #include "drivers/control.h"
 #include "drivers/encoder.h"
+#include "drivers/led.h"
 
 /* GPIO configuration structure */
 const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
@@ -39,7 +40,12 @@ const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
 	{GPIO_PORTD_BASE, GPIO_PIN_6, GPIO_OUTPUT}, /* IR_FRONT_RIGHT */
 	{GPIO_PORTA_BASE, GPIO_PIN_1, GPIO_INPUT},  /*INPUT_CTRL_SWITCH */
 	{GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_INPUT},  /*INPUT_ENCODER_R */
-	{GPIO_PORTE_BASE, GPIO_PIN_3, GPIO_INPUT}   /*INPUT_ENCODER_L */
+	{GPIO_PORTE_BASE, GPIO_PIN_3, GPIO_INPUT},  /*INPUT_ENCODER_L */
+	{GPIO_PORTA_BASE, GPIO_PIN_7, GPIO_OUTPUT},  /* LED_R */
+	{GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_OUTPUT},  /* LED_G */
+	{GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_OUTPUT}   /* LED_B */
+
+
 };
 
 Hwi_Struct portACallbackHwi;
@@ -67,6 +73,11 @@ const GPIO_Config GPIO_config[] = {
     {&gpioHWAttrs[9]},
     {&gpioHWAttrs[10]},
     {&gpioHWAttrs[11]},
+    {&gpioHWAttrs[12]},
+	{&gpioHWAttrs[13]},
+	{&gpioHWAttrs[14]},
+	{&gpioHWAttrs[15]},
+	{&gpioHWAttrs[16]},
     {NULL},
 };
 
@@ -123,6 +134,10 @@ void system_init(){
     encoder_init();
 #endif
 
+#ifdef LED_ENABLE
+    led_init();
+#endif
+
 #ifdef BLUETOOTH_ENABLE
     bluetooth_init();
 #endif
@@ -149,4 +164,5 @@ void system_init(){
     encoder_open();
 
     GPIO_setupCallbacks(&portACallbacks); // Setup interrupts
+    GPIO_setupCallbacks(&portECallbacks); // Setup interrupts
 }

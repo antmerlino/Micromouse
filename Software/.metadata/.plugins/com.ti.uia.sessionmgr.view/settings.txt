@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<section name="Smv">
-	<item value="&lt;UiaEndpoint name=&quot;CORTEX_M4_0&quot; adrs=&quot;0&quot; out_filename=&quot;F:\Projects\Micromouse\Software\micromouse\Debug\micromouse.out&quot; rta_filename=&quot;F:/Projects/Micromouse/Software/micromouse/Debug/configPkg/package/cfg/micromouse_pem4f.rta.xml&quot; uia_filename=&quot;F:/Projects/Micromouse/Software/micromouse/Debug/configPkg/package/cfg/micromouse_xem4f.uia.xml&quot; freq=&quot;80000000&quot; cycPerTick=&quot;1&quot; jtagMonitor=&quot;true&quot;/&gt;" key="3"/>
-	<item value="&lt;UiaControlConnection name=&quot;Control &amp; Status Transport&quot; adrs=&quot;localhost&quot; port=&quot;8080&quot; transport_type=&quot;None&quot; /&gt;" key="2"/>
-	<item value="&lt;UiaEventConnection name=&quot;Event Transport&quot; adrs=&quot;localhost&quot; port=&quot;8080&quot; transport_type=&quot;None&quot; capture_file=&quot;null&quot; /&gt;" key="1"/>
-	<item value="Default" key="SessionName"/>
-	<item value="3" key="NumItems"/>
-	<item value="" key="xmlFileName"/>
-</section>

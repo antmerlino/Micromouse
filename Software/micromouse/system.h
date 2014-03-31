@@ -29,6 +29,9 @@ typedef enum micromouse_gpio_name{
 	INPUT_CTRL_SWITCH,
 	INPUT_ENCODER_R,
 	INPUT_ENCODER_L,
+	LED_R,
+	LED_G,
+	LED_B,
 
 	MICROMOUSE_GPIO_COUNT
 } micromouse_gpio_name_t;
@@ -54,6 +57,7 @@ extern const GPIO_Callbacks portACallbacks;
 #define DEBUG_ENABLE
 #define CONTROL_ENABLE
 #define ENCODER_ENABLE
+#define LED_ENABLE
 
 void system_init();
 
