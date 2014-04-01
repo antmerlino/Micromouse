@@ -16,7 +16,6 @@
 #include "drivers/ir_sensor.h"
 #include "drivers/bluetooth.h"
 
-
 /*
  *  ======== main ========
  */

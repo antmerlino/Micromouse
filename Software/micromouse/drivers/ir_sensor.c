@@ -43,8 +43,6 @@ int16_t rf_offset = 0;
 int16_t lf_offset = 0;
 int16_t lb_offset = 0;
 
-//uint16_t ir_centered;
-
 void side_poll(side_ir_data_t * side_ir_data){
 
 		// Turn on the LEDs
@@ -103,43 +101,47 @@ void side_poll(side_ir_data_t * side_ir_data){
 		}
 }
 
+void front_poll(uint32_t * buf){
+
+	// Turn on the LEDs
+		GPIO_write(IR_FRONT_LEFT, ON);
+		GPIO_write(IR_FRONT_RIGHT, ON);
+
+		// Sleep so the LED can turn on
+		Task_sleep(ir_duty);
+
+		// Trigger ADC0 SS1
+		ADCProcessorTrigger(ADC1_BASE, 1);
+
+		// Wait until the sample sequence has completed.
+		while(!ADCIntStatus(ADC1_BASE, 1, false))
+		{
+		}
+
+		ADCIntClear(ADC1_BASE, 1);
+
+		// Turn off the IR LED
+		GPIO_write(IR_FRONT_LEFT, OFF);
+		GPIO_write(IR_FRONT_RIGHT, OFF);
+
+		// Read ADC Value
+		ADCSequenceDataGet(ADC1_BASE, 1, buf);
+
+}
+
 void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
 	uint32_t adc_data[4];
 
 	walls->count++;
 
-	// Turn on the LEDs
-	GPIO_write(IR_FRONT_LEFT, ON);
-	GPIO_write(IR_FRONT_RIGHT, ON);
-
-	// Sleep so the LED can turn on
-	Task_sleep(ir_duty);
-
-	// Trigger ADC0 SS1
-	ADCProcessorTrigger(ADC1_BASE, 1);
-
-	// Wait until the sample sequence has completed.
-	while(!ADCIntStatus(ADC1_BASE, 1, false))
-	{
-	}
-
-	ADCIntClear(ADC1_BASE, 1);
-
-	// Turn off the IR LED
-	GPIO_write(IR_FRONT_LEFT, OFF);
-	//GPIO_write(IR_FRONT_RIGHT, OFF);
-
-	// Read ADC Value
-	ADCSequenceDataGet(ADC1_BASE, 1, &adc_data[0]);
-
+	front_poll(&adc_data[0]);
 
 //	char spf_buf[80];
 //	int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
 //	bluetooth_transmit(spf_buf, len);
 
-//	if(AVG_DATA >= FRONT_THRESHOLD){
-	if(adc_data[0] >= FRONT_THRESHOLD){
+	if(AVG_DATA >= FRONT_THRESHOLD){
 		walls->front_sum++;
 	}
 
@@ -187,52 +189,6 @@ void stream_ir(char* val) {
 		}
 	}
 }
-
-//void calibrate_ir(){
-//
-//	uint32_t rb_sum = 0;
-//	uint32_t rf_sum = 0;
-//	uint32_t lb_sum = 0;
-//	uint32_t lf_sum = 0;
-//
-//	side_ir_data_t data;
-//
-//	rb_offset = 0;
-//	rf_offset = 0;
-//	lf_offset = 0;
-//	lb_offset = 0;
-//
-//	uint16_t i;
-//
-//	for(i = 0; i <= CALIBRATION_CYCLES; i++){
-//
-//		side_poll(&data);
-//
-//		rb_sum += data.right_back;
-//		rf_sum += data.right_front;
-//		lb_sum += data.left_back;
-//		lf_sum += data.left_front;
-//
-//		Task_sleep(5);
-//
-//	}
-//
-//	//ir_centered = (rb_sum + rf_sum + lb_sum + lf_sum)/(4*CALIBRATION_CYCLES);
-//
-//	rb_offset = IR_CENTERED - (rb_sum/CALIBRATION_CYCLES);
-//	rf_offset = IR_CENTERED - (rf_sum/CALIBRATION_CYCLES);
-//	lb_offset = IR_CENTERED - (lb_sum/CALIBRATION_CYCLES);
-//	lf_offset = IR_CENTERED - (lf_sum/CALIBRATION_CYCLES);
-//
-//	char spf_buf_calibration[80];
-//
-//	int len = sprintf(spf_buf_calibration, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", lf_sum/CALIBRATION_CYCLES,  rf_sum/CALIBRATION_CYCLES, lb_sum/CALIBRATION_CYCLES, rb_sum/CALIBRATION_CYCLES );
-//	bluetooth_transmit(spf_buf_calibration, len);
-//
-//	len = sprintf(spf_buf_calibration, "RB: %i, RF: %i, LB: %i, LF: %i, C: %i\r\n", rb_offset, rf_offset, lb_offset, lf_offset, ir_centered);
-//	bluetooth_transmit(spf_buf_calibration, len);
-//
-//}
 
 void ir_sensor_init(void) {
 

@@ -41,6 +41,7 @@ void maze_clear(void)
 		}
 		currentPositionX=initialPositionX;
 		currentPositionY=initialPositionY;
+		rotation = initialRotation;
 
 }
 

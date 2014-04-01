@@ -1,16 +1,16 @@
 #ifndef IR_ADC_SENSOR_H
 #define IR_ADC_SENSOR_H
 
-#define FRONT_THRESHOLD 600
-#define RIGHT_THRESHOLD 1020
-#define LEFT_THRESHOLD 515
+#define FRONT_THRESHOLD 200
+#define RIGHT_THRESHOLD 425
+#define LEFT_THRESHOLD 425
 
 #define CALIBRATION_CYCLES 400
 
-#define LF_OFFSET 0
-#define RF_OFFSET 760
-#define LB_OFFSET 1238
-#define RB_OFFSET -300
+#define LF_OFFSET -57
+#define RF_OFFSET 180
+#define LB_OFFSET -45
+#define RB_OFFSET 20
 
 #define IR_CENTERED 1500
 
@@ -55,7 +55,7 @@ typedef struct {
 void ir_sensor_init(void);
 void check_walls(walls_t * walls, side_ir_data_t * side_data);
 void side_poll(side_ir_data_t * side_ir_data);
-void side_poll_resume(void);
+void front_poll(uint32_t * buf);
 void update_ir_duty(char * value);
 void calibrate_ir(void);
 

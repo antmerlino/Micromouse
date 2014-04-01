@@ -20,6 +20,7 @@ void left_encoder_count();
 void right_encoder_count();
 void check_distance();
 void stream_encoder(char* val);
+void get_xdiff();
 
 
 #endif /* ENCODER_H_ */

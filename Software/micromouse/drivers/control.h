@@ -8,15 +8,15 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#define SETPOINT 0
+#define SETPOINT -600
 #define TURN_SPEED 100
 
 #define INITIAL_WALLS 0x07
 
-#define NUMTICKS_PER_BLOCK 300
-#define NUMTICKS_FULL_TURN 220
+#define NUMTICKS_PER_BLOCK 285
+#define NUMTICKS_FULL_TURN 213
 #define NUMTICKS_HALF_TURN 100
-#define WALL_CHECK_ZONE 125
+#define WALL_CHECK_ZONE 100
 
 #define ENCODER_SCALE 50
 
@@ -29,8 +29,7 @@ typedef enum {
 	TURN_RIGHT,
 	TURN_AROUND,
 	TURN_LEFT,
-	START,
-
+	START
 } control_state_t;
 
 void control_loop();

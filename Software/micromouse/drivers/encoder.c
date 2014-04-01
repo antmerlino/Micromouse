@@ -125,5 +125,3 @@ void right_encoder_count(){
 
 }
 
-
-

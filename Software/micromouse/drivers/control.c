@@ -41,7 +41,7 @@ typedef struct straight_pid_params_t {
 	uint32_t motor_speed;
 }straight_pid_params_t;
 
-straight_pid_params_t straight_control_params = {1.5, 0.2, 0.3, 100};
+straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 200};
 
 Semaphore_Handle drive_straight_sem_handle;
 Semaphore_Params drive_straight_sem_params;
@@ -109,7 +109,7 @@ void control_loop(){
 				right_avg = (side_data.right_front + side_data.right_back)/2;
 
 				// If there is a missing wall on both sider, we'll just use the encoder data, so set the ir_diff = 0
-				if((walls.flags.left == 0) || (walls.flags.right == 0 )){
+				if((walls.flags.left == 0) && (walls.flags.right == 0 )){
 
 					// Use the encoder data
 //					ir_diff = ENCODER_SCALE * (right_motor_ticks - left_motor_ticks);
@@ -208,8 +208,8 @@ void control_loop(){
 				walls.flags.left = 1;
 
 				if(explore){
+
 					maze_clear();
-					maze_solver_init();
 					maze_update_node(INITIAL_WALLS);
 
 					micromouse_state = (control_state_t) maze_next_direction_dfs();
@@ -303,6 +303,11 @@ void check_distance(){
 
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+
+				walls.count = 0;
+				walls.front_sum = 0;
+				walls.left_sum = 0;
+				walls.right_sum = 0;
 			}
 			break;
 
@@ -315,6 +320,11 @@ void check_distance(){
 
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+
+				walls.count = 0;
+				walls.front_sum = 0;
+				walls.left_sum = 0;
+				walls.right_sum = 0;
 			}
 		break;
 
@@ -327,6 +337,11 @@ void check_distance(){
 
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+
+				walls.count = 0;
+				walls.front_sum = 0;
+				walls.left_sum = 0;
+				walls.right_sum = 0;
 			}
 		break;
 
@@ -366,7 +381,7 @@ void control_init(){
 void set_pid_kp(char* val) {
 	char buf[64];
 	uint32_t val_int = atoi(val);
-	straight_control_params.kp = val_int/10.0;
+	straight_control_params.kp = val_int/100.0;
 	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 	uint8_t len = sprintf(buf, "Straight PID KP set to: %3f\r\n", straight_control_params.kp);
 	bluetooth_transmit(buf, len);
@@ -375,7 +390,7 @@ void set_pid_kp(char* val) {
 void set_pid_ki(char* val) {
 	char buf[64];
 	uint32_t val_int = atoi(val);
-	straight_control_params.ki = val_int/10.0;
+	straight_control_params.ki = val_int/100.0;
 	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 
 	uint8_t len = sprintf(buf, "Straight PID KI set to: %3f\r\n", straight_control_params.ki);
@@ -385,7 +400,7 @@ void set_pid_ki(char* val) {
 void set_pid_kd(char* val) {
 	char buf[64];
 	uint32_t val_int = atoi(val);
-	straight_control_params.kd = val_int/10.0;
+	straight_control_params.kd = val_int/100.0;
 	pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 
 	uint8_t len = sprintf(buf, "Straight PID KD set to: %3f\r\n", straight_control_params.kd);

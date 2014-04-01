@@ -156,6 +156,8 @@ void system_init(){
 //OPEN DEBUG
 #endif
 
+    maze_solver_init();
+
     control_init();
 
     GPIO_init();
