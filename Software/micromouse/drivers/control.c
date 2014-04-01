@@ -138,8 +138,8 @@ void control_loop(){
 				error = pid_step(&side_pid, SETPOINT, ir_diff, (float)get_curr_time_us())/100;
 
 				// Use the error term to correct the motors
-				right_motor_out = straight_control_params.motor_speed + error/2;
-				left_motor_out = straight_control_params.motor_speed - error/2;
+				right_motor_out = straight_control_params.motor_speed - MOTOR_SPEED_OFFSET + error/2;
+				left_motor_out = straight_control_params.motor_speed + MOTOR_SPEED_OFFSET - error/2;
 
 				if(right_motor_out < 0){
 					update_motor(RIGHT_MOTOR, CW, -1*right_motor_out);
@@ -169,22 +169,22 @@ void control_loop(){
 
 			case TURN_AROUND:
 
-				update_motor(RIGHT_MOTOR, CW, TURN_SPEED);
-				update_motor(LEFT_MOTOR, CW, TURN_SPEED);
+				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
 			case TURN_RIGHT:
 
-				update_motor(RIGHT_MOTOR, CW, TURN_SPEED);
-				update_motor(LEFT_MOTOR, CW, TURN_SPEED);
+				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
 			case TURN_LEFT:
 
-				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED);
-				update_motor(LEFT_MOTOR, CCW, TURN_SPEED);
+				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+				update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
@@ -266,12 +266,26 @@ void check_distance(){
 
 					micromouse_state = (control_state_t) maze_next_direction_dfs();
 
+					if(micromouse_state != STRAIGHT){
+						update_motor(LEFT_MOTOR, BRAKE, 500);
+						update_motor(RIGHT_MOTOR, BRAKE, 500);
+						Task_sleep(250);
+					}
+
+					if( (walls.flags.front == 1) && ( (micromouse_state == TURN_AROUND) || (micromouse_state == TURN_RIGHT) || (micromouse_state == TURN_LEFT) ) ){
+
+						calibrate_front();
+
+					}
+
 					if(delay_on){
 						update_motor(LEFT_MOTOR, CW, 0);
 						update_motor(RIGHT_MOTOR, CCW, 0);
 
 						Task_sleep(1000);
 					}
+
+
 
 
 					first_check = 1;

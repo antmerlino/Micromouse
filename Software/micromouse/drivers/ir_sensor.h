@@ -5,6 +5,9 @@
 #define RIGHT_THRESHOLD 425
 #define LEFT_THRESHOLD 425
 
+#define FRONT_THRESHOLD_UPPER 2400
+#define FRONT_THRESHOLD_LOWER 2350
+
 #define CALIBRATION_CYCLES 400
 
 #define LF_OFFSET -57
@@ -57,7 +60,7 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data);
 void side_poll(side_ir_data_t * side_ir_data);
 void front_poll(uint32_t * buf);
 void update_ir_duty(char * value);
-void calibrate_ir(void);
+void calibrate_front(void);
 
 // UART Callback
 void stream_ir(char* val);

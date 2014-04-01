@@ -17,6 +17,8 @@
 #include "system.h"
 #include "ir_sensor.h"
 #include "drivers/bluetooth.h"
+#include "drivers/motor.h"
+
 #include <ti/drivers/GPIO.h>
 
 /* XDCtools Header files */
@@ -137,9 +139,9 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
 	front_poll(&adc_data[0]);
 
-//	char spf_buf[80];
-//	int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
-//	bluetooth_transmit(spf_buf, len);
+	char spf_buf[80];
+	int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
+	bluetooth_transmit(spf_buf, len);
 
 	if(AVG_DATA >= FRONT_THRESHOLD){
 		walls->front_sum++;
@@ -285,4 +287,55 @@ void update_ir_duty(char * value){
 	}
 
 }
+
+void calibrate_front(){
+
+	uint32_t front_data[4];
+
+	// Poll once before loop
+	front_poll(&front_data[0]);
+
+	while( (front_data[0] > FRONT_THRESHOLD_UPPER) || (front_data[0] < FRONT_THRESHOLD_LOWER) ){
+
+		// If we are too far away from the wall move forward slowly
+		if( front_data[0] < FRONT_THRESHOLD_LOWER){
+
+			// Start moving slowly forward
+			update_motor(RIGHT_MOTOR, CCW, 75);
+			update_motor(LEFT_MOTOR, CW, 100);
+
+			while(front_data[0] < FRONT_THRESHOLD_LOWER){
+				front_poll(&front_data[0]);
+			}
+
+			// Turn the motors off
+			update_motor(RIGHT_MOTOR, CCW, 0);
+			update_motor(LEFT_MOTOR, CW, 0);
+
+		}
+
+
+		// If we are too close to the wall move backward slowly
+		if(front_data[0] > FRONT_THRESHOLD_UPPER){
+
+			// Start moving slowly forward
+			update_motor(RIGHT_MOTOR, CW, 75);
+			update_motor(LEFT_MOTOR, CCW, 100);
+
+			while(front_data[0] > FRONT_THRESHOLD_UPPER){
+				front_poll(&front_data[0]);
+			}
+
+			// Turn the motors off
+			update_motor(RIGHT_MOTOR, CCW, 0);
+			update_motor(LEFT_MOTOR, CW, 0);
+
+		}
+
+		// Poll again to get new data
+		front_poll(&front_data[0]);
+	}
+}
+
+
 
