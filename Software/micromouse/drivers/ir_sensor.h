@@ -8,8 +8,8 @@
 #define FRONT_THRESHOLD_UPPER 2400
 #define FRONT_THRESHOLD_LOWER 2350
 
-#define LEFT_DIFF_THRESHOLD 100
-#define RIGHT_DIFF_THRESHOLD 100
+#define LEFT_DIFF_THRESHOLD 50
+#define RIGHT_DIFF_THRESHOLD 50
 
 #define CALIBRATION_CYCLES 400
 
@@ -42,7 +42,7 @@ typedef struct {
 	uint16_t front_sum;
 	uint16_t left_sum;
 	uint16_t right_sum;
-
+	int32_t wall_diff;
 	union {
 
 		uint8_t wall_int;

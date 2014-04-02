@@ -62,9 +62,6 @@ pid_controller_t side_pid;
 bool stream_buf_encoder = false;
 char spf_buf_encoder[80];
 
-bool stream_buf_walls = false;
-char spf_buf_walls[80];
-
 bool stream_buf_motor = false;
 char spf_buf_motor[80];
 
@@ -78,8 +75,8 @@ bool stop_control_loop = true;
 void control_loop(){
 
 
-	uint32_t left_avg;
-	uint32_t right_avg;
+	//uint32_t left_avg;
+	//uint32_t right_avg;
 
 	int32_t ir_diff;
 	int32_t encoder_diff;
@@ -96,19 +93,18 @@ void control_loop(){
 
 		check_distance();
 
+		side_poll(&side_data);
+		check_walls(&walls, &side_data); //Potentially return irdiff here. Include in walls struct. Currently using redundant logic here to make decisions.
+		ir_diff=walls.wall_diff;
 		switch(micromouse_state){
 
 			case STRAIGHT:
 
-				// Need to poll no matter what so that we can either use the data for the PID or at
-				// least for the wall detection
-				side_poll(&side_data);
-
 				// Find the average data for each side
-				left_avg = (side_data.left_front + side_data.left_back)/2;
-				right_avg = (side_data.right_front + side_data.right_back)/2;
-
-				// If there is a missing wall on both sider, we'll just use the encoder data, so set the ir_diff = 0
+				//left_avg = (side_data.left_front + side_data.left_back)/2;
+				//right_avg = (side_data.right_front + side_data.right_back)/2;
+				/*
+				// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
 				if((walls.flags.left == 0) && (walls.flags.right == 0 )){
 					ir_diff = 0;
 				}
@@ -124,7 +120,7 @@ void control_loop(){
 					// Since we have a wall on both sides, find the difference between the two averages
 					ir_diff = left_avg - right_avg;
 				}
-
+				*/
 				error = pid_step(&side_pid, SETPOINT, ir_diff, (float)get_curr_time_us())/100;
 
 				// Use the error term to correct the motors
@@ -228,24 +224,6 @@ void check_distance(){
 
 		case STRAIGHT:
 
-			if( (avg_ticks >= NUMTICKS_PER_BLOCK - WALL_CHECK_ZONE) && (avg_ticks < NUMTICKS_PER_BLOCK) ){
-
-				if(first_check){
-					first_check = 0;
-
-					walls.count = 0;
-					walls.front_sum = 0;
-					walls.left_sum = 0;
-					walls.right_sum = 0;
-
-//					update_motor(LEFT_MOTOR, CW, 0);
-//					update_motor(RIGHT_MOTOR, CCW, 0);
-//					Task_sleep(3000);
-				}
-
-				check_walls(&walls, &side_data);
-			}
-
 			if(explore){
 
 				if( avg_ticks >= NUMTICKS_PER_BLOCK){
@@ -273,10 +251,6 @@ void check_distance(){
 						Task_sleep(1000);
 					}
 
-
-
-
-					first_check = 1;
 					left_motor_ticks = 0;
 					right_motor_ticks = 0;
 				}
@@ -304,36 +278,34 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(250);
-
-				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				Task_sleep(1000);
 
 				uint8_t i;
-				for(i = 0; i < 20; i++)
+				for(i = 0; i < 5; i++)
 				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
 				}
 
-				if(walls.flags.left == 1 && walls.flags.right == 0){
-
+				if(walls.flags.left && walls.flags.right){
 					calibrate_left();
-
-				}
-
-				if(walls.flags.right == 1 && walls.flags.left == 0){
-
 					calibrate_right();
-
 				}
 
+				if(walls.flags.left && !walls.flags.right){
+					calibrate_left();
+				}
 
-				walls.count = 0;
-				walls.front_sum = 0;
-				walls.left_sum = 0;
-				walls.right_sum = 0;
+				if(walls.flags.right && !walls.flags.left){
+					calibrate_right();
+				}
+
+				micromouse_state = STRAIGHT;
+				left_motor_ticks = 0;
+				right_motor_ticks = 0;
+
+
+
 			}
 			break;
 
@@ -345,36 +317,34 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(250);
-
-				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				Task_sleep(1000);
 
 				uint8_t i;
-				for(i = 0; i < 20; i++)
+				for(i = 0; i < 5; i++)
 				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
 				}
 
-				if(walls.flags.left == 1 && walls.flags.right == 0){
-
+				if(walls.flags.left && walls.flags.right){
 					calibrate_left();
-
-				}
-
-				if(walls.flags.right == 1 && walls.flags.left == 0){
-
 					calibrate_right();
-
 				}
 
+				if(walls.flags.left && !walls.flags.right){
+					calibrate_left();
+				}
 
-				walls.count = 0;
-				walls.front_sum = 0;
-				walls.left_sum = 0;
-				walls.right_sum = 0;
+				if(walls.flags.right && !walls.flags.left){
+					calibrate_right();
+				}
+
+				micromouse_state = STRAIGHT;
+				left_motor_ticks = 0;
+				right_motor_ticks = 0;
+
+
+
 			}
 		break;
 
@@ -386,11 +356,7 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(250);
-
-				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				Task_sleep(1000);
 
 				uint8_t i;
 				for(i = 0; i < 20; i++)
@@ -399,23 +365,23 @@ void check_distance(){
 				check_walls(&walls, &side_data);
 				}
 
-				if(walls.flags.left == 1 && walls.flags.right == 0){
-
+				if(walls.flags.left && walls.flags.right){
 					calibrate_left();
-
-				}
-
-				if(walls.flags.right == 1 && walls.flags.left == 0){
-
 					calibrate_right();
-
 				}
 
+				if(walls.flags.left && !walls.flags.right){
+					calibrate_left();
+				}
 
-				walls.count = 0;
-				walls.front_sum = 0;
-				walls.left_sum = 0;
-				walls.right_sum = 0;
+				if(walls.flags.right && !walls.flags.left){
+					calibrate_right();
+				}
+
+				micromouse_state = STRAIGHT;
+				left_motor_ticks = 0;
+				right_motor_ticks = 0;
+
 			}
 		break;
 
@@ -426,10 +392,6 @@ void check_distance(){
 	if(stream_buf_encoder){
 		int len = sprintf(spf_buf_encoder, "L: %i, R: %i\r\n", left_motor_ticks, right_motor_ticks);
 		bluetooth_transmit(spf_buf_encoder, len);
-	}
-	if(stream_buf_walls){
-		int len = sprintf(spf_buf_walls, "F: %i, R: %i, B: %i, L: %i, M: %i\r\n", walls.flags.front, walls.flags.right, walls.flags.back, walls.flags.left, micromouse_state);
-		bluetooth_transmit(spf_buf_walls, len);
 	}
 }
 
@@ -515,18 +477,6 @@ void stream_encoder(char* val) {
 			stream_buf_encoder = false;
 		} else {
 			bluetooth_transmit("Invalid Encoder Stream Value! 'on' or 'off'\r\n", 36);
-		}
-	}
-}
-
-void stream_walls(char* val) {
-	if(strcmp(val, "on") == 0) {
-		stream_buf_walls = true;
-	} else {
-		if(strcmp(val, "off") == 0) {
-			stream_buf_walls = false;
-		} else {
-			bluetooth_transmit("Invalid Wall Stream Value! 'on' or 'off'\r\n", 36);
 		}
 	}
 }
