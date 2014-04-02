@@ -30,7 +30,8 @@
 
 #include "drivers/bluetooth.h"
 #include "drivers/led.h"
-#include "drivers/control.h"
+
+#include "services/control.h"
 
 #include "encoder.h"
 
@@ -105,9 +106,6 @@ void encoder_init(){
 
 }
 
-void encoder_open() {
-	// Nothing here
-}
 
 void left_encoder_count(){
 

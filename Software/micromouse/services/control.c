@@ -89,39 +89,19 @@ void control_loop(){
 
 
 	while(1){
+
 		Semaphore_pend(drive_straight_sem_handle, BIOS_WAIT_FOREVER);
 
 		check_distance();
 
 		side_poll(&side_data);
-		check_walls(&walls, &side_data); //Potentially return irdiff here. Include in walls struct. Currently using redundant logic here to make decisions.
-		ir_diff=walls.wall_diff;
+		check_walls(&walls, &side_data);
+
 		switch(micromouse_state){
 
 			case STRAIGHT:
 
-				// Find the average data for each side
-				//left_avg = (side_data.left_front + side_data.left_back)/2;
-				//right_avg = (side_data.right_front + side_data.right_back)/2;
-				/*
-				// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
-				if((walls.flags.left == 0) && (walls.flags.right == 0 )){
-					ir_diff = 0;
-				}
-				else if(walls.flags.left == 0){
-					// Using only the right IR information, try to hold the theoretical center
-					ir_diff = 2*(IR_CENTERED - right_avg);
-				}
-				else if(walls.flags.right ==0){
-					// Using only the left IR information, try to hold the theoretical center
-					ir_diff = 2*(left_avg - IR_CENTERED);
-				}
-				else{
-					// Since we have a wall on both sides, find the difference between the two averages
-					ir_diff = left_avg - right_avg;
-				}
-				*/
-				error = pid_step(&side_pid, SETPOINT, ir_diff, (float)get_curr_time_us())/100;
+				error = pid_step(&side_pid, SETPOINT, walls.wall_diff, (float)get_curr_time_us())/100;
 
 				// Use the error term to correct the motors
 				right_motor_out = straight_control_params.motor_speed - MOTOR_SPEED_OFFSET + error/2;
@@ -278,7 +258,7 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(1000);
+				Task_sleep(250);
 
 				uint8_t i;
 				for(i = 0; i < 5; i++)
@@ -303,8 +283,6 @@ void check_distance(){
 				micromouse_state = STRAIGHT;
 				left_motor_ticks = 0;
 				right_motor_ticks = 0;
-
-
 
 			}
 			break;
@@ -317,7 +295,7 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(1000);
+				Task_sleep(250);
 
 				uint8_t i;
 				for(i = 0; i < 5; i++)
@@ -343,8 +321,6 @@ void check_distance(){
 				left_motor_ticks = 0;
 				right_motor_ticks = 0;
 
-
-
 			}
 		break;
 
@@ -356,10 +332,10 @@ void check_distance(){
 				update_motor(LEFT_MOTOR, BRAKE, 500);
 				update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-				Task_sleep(1000);
+				Task_sleep(250);
 
 				uint8_t i;
-				for(i = 0; i < 20; i++)
+				for(i = 0; i < 5; i++)
 				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);

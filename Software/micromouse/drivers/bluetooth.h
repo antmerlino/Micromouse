@@ -1,14 +1,14 @@
 /*
- * bluesmirf.h
+ * bluetooth.h
  *
  *  Created on: Mar 21, 2014
- *      Author: Anthony
+ *      Author: Anthony Merlino
  */
 
 #ifndef BLUETOOTH_H_
 #define BLUETOOTH_H_
 
-#include "drivers/control.h"
+#include "services/control.h"
 #include "drivers/ir_sensor.h"
 #include "drivers/encoder.h"
 

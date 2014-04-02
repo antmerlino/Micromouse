@@ -16,14 +16,16 @@
 #include <ti/drivers/uart/UARTTiva.h>
 #include <ti/drivers/UART.h>
 
-
-#include "system.h"
 #include "drivers/motor.h"
 #include "drivers/ir_sensor.h"
 #include "drivers/bluetooth.h"
-#include "drivers/control.h"
 #include "drivers/encoder.h"
 #include "drivers/led.h"
+
+#include "services/maze_solver.h"
+#include "services/control.h"
+
+#include "system.h"
 
 /* GPIO configuration structure */
 const GPIO_HWAttrs gpioHWAttrs[MICROMOUSE_GPIO_COUNT] = {
@@ -86,22 +88,10 @@ UARTTiva_Object uartTivaObjects[MICROMOUSE_UARTCOUNT];
 
 /* UART configuration structure */
 const UARTTiva_HWAttrs uartTivaHWAttrs[MICROMOUSE_UARTCOUNT] = {
-    //{UART0_BASE, INT_UART0}, /* MICROMOUSEL_UART0 */
-    //{UART3_BASE, INT_UART3},  /* DEBUG - UART3 */
     {UART4_BASE, INT_UART4}  /* BLUETOOTH - UART4 */
 };
 
 const UART_Config UART_config[] = {
-//    { // UART0
-//	&UARTTiva_fxnTable,
-//	&uartTivaObjects[0],
-//	&uartTivaHWAttrs[0]
-//    },
-//    { // UART3
-//	&UARTTiva_fxnTable,
-//	&uartTivaObjects[1],
-//	&uartTivaHWAttrs[1]
-//    },
     { // UART4
 	&UARTTiva_fxnTable,
 	&uartTivaObjects[0],
@@ -122,49 +112,40 @@ void system_init(){
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-#ifdef MOTORS_ENABLE
+    //Initialize Motor Control
     motors_init();
-#endif
 
-#ifdef IR_ADC_SENSORS_ENABLE
+    //Initialize IR Sensor Control
     ir_sensor_init();
-#endif
 
-#ifdef ENCODER_ENABLE
+    //Initialize Encoders
     encoder_init();
-#endif
 
-#ifdef LED_ENABLE
+    //Initialize RGB LED
     led_init();
-#endif
 
-#ifdef BLUETOOTH_ENABLE
+    //Initialize Bluetooth Module
     bluetooth_init();
-#endif
 
-#ifdef DEBUG_ENABLE
-//INITIALIZE DEBUG
-#endif
-
+    //Initialize UART in TI-RTOS
 	UART_init();
 
-#ifdef BLUETOOTH_ENABLE
+    //Open Bluetooth Communication
     bluetooth_open();
-#endif
 
-#ifdef DEBUG_ENABLE
-//OPEN DEBUG
-#endif
-
+    //Initialize Maze Solving Algorithm
     maze_solver_init();
 
+    //Initialize Control Module
     control_init();
 
+    //Initialize GPIO in TI-RTOS
     GPIO_init();
 
+    //Open Control (Sets up switch GPIO Interrupt)
     control_open();
-    encoder_open();
 
+    // Configure the GPIO Callbacks
     GPIO_setupCallbacks(&portACallbacks); // Setup interrupts
     GPIO_setupCallbacks(&portECallbacks); // Setup interrupts
 }

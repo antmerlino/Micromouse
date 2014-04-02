@@ -137,68 +137,11 @@ void front_poll(uint32_t * buf){
 
 }
 
-//void check_walls(walls_t * walls, side_ir_data_t * side_data){
-//
-//	uint32_t adc_data[4];
-//
-//	walls->count++;
-//
-//	front_poll(&adc_data[0]);
-//
-//	char spf_buf[80];
-//	int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
-//	bluetooth_transmit(spf_buf, len);
-//
-//	if(AVG_DATA >= FRONT_THRESHOLD){
-//		walls->front_sum++;
-//	}
-//
-//	if(walls->front_sum/walls->count > 0.5){
-//		walls->flags.front = 1;
-//	}
-//	else{
-//		walls->flags.front = 0;
-//	}
-//
-//
-//	if( side_data->left_front >= LEFT_THRESHOLD){
-//		walls->left_sum++;
-//	}
-//
-//	if(walls->left_sum/walls->count > 0.5){
-//		walls->flags.left = 1;
-//	}
-//	else{
-//		walls->flags.left = 0;
-//	}
-//
-//	if( side_data->right_front >= RIGHT_THRESHOLD){
-//		walls->right_sum++;
-//	}
-//
-//	if(walls->right_sum/walls->count > 0.5){
-//		walls->flags.right = 1;
-//	}
-//	else{
-//		walls->flags.right = 0;
-//
-//	}
-//
-//}
-
-
 void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
 		uint32_t adc_data[4];
-		uint32_t left_avg=0;
-		uint32_t right_avg=0;
-
-		walls->count++;
 
 		front_poll(&adc_data[0]);
-
-		//Expand data here. Initial assumptions about walls are FINE because they're used for flags only. Set flags, then do a more comprehensive check. Return an irdiff.
-		//Remove current logic to make straight irdiff decisions within control.c. Instead perform it here.
 
 		//Simple front flag decision.
 		if(AVG_DATA >= FRONT_THRESHOLD){
@@ -208,60 +151,21 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 			walls->flags.front = 0;
 		}
 
-
 		//Simple left flag decision
-		/*
 		if( side_data->left_front >= LEFT_THRESHOLD){
 			walls->flags.left = 1;
 		}
 		else{
 			walls->flags.left = 0;
 		}
-		*/
-
-		if( side_data->left_front >= LEFT_THRESHOLD&&side_data->left_back >= LEFT_THRESHOLD){
-			walls->flags.left = 1;
-			left_avg=(side_data->left_front+side_data->left_back)/2;
-		}
-		else{
-			walls->flags.left = 0;
-		}
-
 
 		//Simple right flag decision
-		/*
 		if( side_data->right_front >= RIGHT_THRESHOLD){
 			walls->flags.right = 1;
 		}
 		else{
 			walls->flags.right = 0;
 		}
-		*/
-
-		if( side_data->right_front >= RIGHT_THRESHOLD&&side_data->right_back >= RIGHT_THRESHOLD){
-			walls->flags.right = 1;
-			right_avg=(side_data->right_front+side_data->right_back)/2;
-		}
-		else{
-			walls->flags.right = 0;
-		}
-
-
-		//Here we do irdiff calculation. Set to walls_t struct value wall_diff
-		//Decide left_avg and right_avg separately. This way we can pre-decide whether to use both sensors.
-		//
-
-		//right_avg+=(side_data->right_front >= RIGHT_THRESHOLD) ? side_data->right_front : 0;
-		//right_avg+=(side_data->right_back >= RIGHT_THRESHOLD) ? side_data->right_back : 0;
-
-		//if(right_avg==(side_data->right_front+side_data->right_back))
-			//right_avg/=2;
-
-		//left_avg+=(side_data->left_front >= LEFT_THRESHOLD) ? side_data->left_front : 0;
-		//left_avg+=(side_data->left_back >= LEFT_THRESHOLD) ? side_data->left_back : 0;
-
-		//if(left_avg==(side_data->left_front+side_data->left_back))
-			//left_avg/=2;
 
 		// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
 		if((walls->flags.left == 0) && (walls->flags.right == 0 )){
@@ -269,15 +173,15 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 		}
 		else if(walls->flags.left == 0){
 			// Using only the right IR information, try to hold the theoretical center
-			walls->wall_diff = 2*(IR_CENTERED - right_avg);
+			walls->wall_diff = 2*(IR_CENTERED - side_data->right_front);
 		}
 		else if(walls->flags.right ==0){
 			// Using only the left IR information, try to hold the theoretical center
-			walls->wall_diff = 2*(left_avg - IR_CENTERED);
+			walls->wall_diff = 2*(side_data->left_front - IR_CENTERED);
 		}
 		else{
 			// Since we have a wall on both sides, find the difference between the two averages
-			walls->wall_diff = left_avg - right_avg;
+			walls->wall_diff = side_data->left_front - side_data->right_front;
 		}
 
 		if(stream_buf_walls){
@@ -414,6 +318,41 @@ void calibrate_front(){
 	// Poll once before loop
 	front_poll(&front_data[0]);
 
+	// Square up the front before we calibrate the distance from the wall
+	while( abs(front_data[0] - front_data[1]) >= FRONT_DIFF_THRESHOLD){
+
+		// If the front left is closer, we need to turn Clockwise (Right) slightly
+		if (front_data[0] > front_data[1]){
+
+			update_motor(LEFT_MOTOR, CW, 100);
+			update_motor(RIGHT_MOTOR, CW, 85);
+
+			while(front_data[0] > front_data[1]){
+				front_poll(&front_data[0]);
+			}
+
+			update_motor(LEFT_MOTOR, CCW, 0);
+			update_motor(RIGHT_MOTOR, CCW, 0);
+
+		}
+		// If the front right is closer, we need to turn Counter-Clockwise (Left) slightly
+		else{
+
+			update_motor(LEFT_MOTOR, CCW, 100);
+			update_motor(RIGHT_MOTOR, CCW, 85);
+
+			while(front_data[0] < front_data[1]){
+				front_poll(&front_data[0]);
+			}
+
+			update_motor(LEFT_MOTOR, CCW, 0);
+			update_motor(RIGHT_MOTOR, CCW, 0);
+
+		}
+
+	}
+
+	// Now that we are perpendicular to the wall, calibrate the distance
 	while( (FRONT_AVG > FRONT_THRESHOLD_UPPER) || (FRONT_AVG < FRONT_THRESHOLD_LOWER) ){
 
 		// If we are too far away from the wall move forward slowly
@@ -458,8 +397,6 @@ void calibrate_front(){
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-	Task_sleep(1000);
-
 }
 
 void calibrate_left(void){
@@ -503,8 +440,6 @@ void calibrate_left(void){
 
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
-
-	Task_sleep(1000);
 
 }
 
@@ -551,7 +486,6 @@ void calibrate_right(void){
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
 
-	Task_sleep(1000);
 }
 
 

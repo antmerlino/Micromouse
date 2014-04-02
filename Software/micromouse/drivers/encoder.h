@@ -15,7 +15,6 @@ extern uint32_t left_motor_ticks;
 extern uint32_t right_motor_ticks;
 
 void encoder_init();
-void encoder_open();
 void left_encoder_count();
 void right_encoder_count();
 void check_distance();
