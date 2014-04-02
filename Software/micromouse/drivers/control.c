@@ -110,29 +110,19 @@ void control_loop(){
 
 				// If there is a missing wall on both sider, we'll just use the encoder data, so set the ir_diff = 0
 				if((walls.flags.left == 0) && (walls.flags.right == 0 )){
-
-					// Use the encoder data
-//					ir_diff = ENCODER_SCALE * (right_motor_ticks - left_motor_ticks);
 					ir_diff = 0;
-
-
 				}
 				else if(walls.flags.left == 0){
-
 					// Using only the right IR information, try to hold the theoretical center
-					ir_diff = IR_CENTERED - right_avg;
-
+					ir_diff = 2*(IR_CENTERED - right_avg);
 				}
 				else if(walls.flags.right ==0){
-
 					// Using only the left IR information, try to hold the theoretical center
-					ir_diff = left_avg - IR_CENTERED;
+					ir_diff = 2*(left_avg - IR_CENTERED);
 				}
 				else{
-
 					// Since we have a wall on both sides, find the difference between the two averages
 					ir_diff = left_avg - right_avg;
-
 				}
 
 				error = pid_step(&side_pid, SETPOINT, ir_diff, (float)get_curr_time_us())/100;
@@ -200,8 +190,6 @@ void control_loop(){
 			case START:
 
 				Task_sleep(2000);
-
-//				calibrate_ir();
 
 				walls.wall_int = 0;
 				walls.flags.right = 1;
@@ -311,12 +299,36 @@ void check_distance(){
 		case TURN_AROUND:
 
 			if(avg_ticks >= NUMTICKS_FULL_TURN){
+
+				// Brake!
+				update_motor(LEFT_MOTOR, BRAKE, 500);
+				update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+				Task_sleep(250);
+
 				micromouse_state = STRAIGHT;
 				left_motor_ticks = 0;
 				right_motor_ticks = 0;
 
+				uint8_t i;
+				for(i = 0; i < 20; i++)
+				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+				}
+
+				if(walls.flags.left == 1 && walls.flags.right == 0){
+
+					calibrate_left();
+
+				}
+
+				if(walls.flags.right == 1 && walls.flags.left == 0){
+
+					calibrate_right();
+
+				}
+
 
 				walls.count = 0;
 				walls.front_sum = 0;
@@ -328,12 +340,36 @@ void check_distance(){
 		case TURN_RIGHT:
 
 			if(avg_ticks >= NUMTICKS_HALF_TURN){
+
+				// Brake!
+				update_motor(LEFT_MOTOR, BRAKE, 500);
+				update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+				Task_sleep(250);
+
 				micromouse_state = STRAIGHT;
 				left_motor_ticks = 0;
 				right_motor_ticks = 0;
 
+				uint8_t i;
+				for(i = 0; i < 20; i++)
+				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+				}
+
+				if(walls.flags.left == 1 && walls.flags.right == 0){
+
+					calibrate_left();
+
+				}
+
+				if(walls.flags.right == 1 && walls.flags.left == 0){
+
+					calibrate_right();
+
+				}
+
 
 				walls.count = 0;
 				walls.front_sum = 0;
@@ -345,12 +381,36 @@ void check_distance(){
 		case TURN_LEFT:
 
 			if(avg_ticks >= NUMTICKS_HALF_TURN){
+
+				// Brake!
+				update_motor(LEFT_MOTOR, BRAKE, 500);
+				update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+				Task_sleep(250);
+
 				micromouse_state = STRAIGHT;
 				left_motor_ticks = 0;
 				right_motor_ticks = 0;
 
+				uint8_t i;
+				for(i = 0; i < 20; i++)
+				{
 				side_poll(&side_data);
 				check_walls(&walls, &side_data);
+				}
+
+				if(walls.flags.left == 1 && walls.flags.right == 0){
+
+					calibrate_left();
+
+				}
+
+				if(walls.flags.right == 1 && walls.flags.left == 0){
+
+					calibrate_right();
+
+				}
+
 
 				walls.count = 0;
 				walls.front_sum = 0;

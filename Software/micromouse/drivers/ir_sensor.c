@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
 #include <inc/hw_memmap.h>
 #include <driverlib/gpio.h>
 #include <driverlib/pin_map.h>
@@ -180,6 +182,34 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
 }
 
+
+//void check_walls(walls_t * walls, side_ir_data_t * side_data){
+//
+//
+//		uint32_t adc_data[4];
+//
+//		walls->count++;
+//
+//		front_poll(&adc_data[0]);
+//
+////		char spf_buf[80];
+////		int len = sprintf(spf_buf, "F: %i\r\n", AVG_DATA);
+////		bluetooth_transmit(spf_buf, len);
+//
+//		if(AVG_DATA >= FRONT_THRESHOLD){
+//			walls->flags.front = 1;
+//		}
+//
+//		if( side_data->left_front >= LEFT_THRESHOLD){
+//			walls->flags.left = 1;
+//		}
+//
+//		if( side_data->right_front >= RIGHT_THRESHOLD){
+//			walls->flags.right = 1;
+//		}
+//
+//}
+
 void stream_ir(char* val) {
 	if(strcmp(val, "on") == 0) {
 		stream_buf = true;
@@ -301,7 +331,7 @@ void calibrate_front(){
 		if( front_data[0] < FRONT_THRESHOLD_LOWER){
 
 			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CCW, 75);
+			update_motor(RIGHT_MOTOR, CCW, 85);
 			update_motor(LEFT_MOTOR, CW, 100);
 
 			while(front_data[0] < FRONT_THRESHOLD_LOWER){
@@ -319,7 +349,7 @@ void calibrate_front(){
 		if(front_data[0] > FRONT_THRESHOLD_UPPER){
 
 			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CW, 75);
+			update_motor(RIGHT_MOTOR, CW, 85);
 			update_motor(LEFT_MOTOR, CCW, 100);
 
 			while(front_data[0] > FRONT_THRESHOLD_UPPER){
@@ -337,5 +367,64 @@ void calibrate_front(){
 	}
 }
 
+void calibrate_left(void){
+
+	side_ir_data_t side_data;
+
+	side_poll(&side_data);
+
+	while( abs(side_data.left_back - side_data.left_front) >= LEFT_DIFF_THRESHOLD){
+
+		if (side_data.left_back > side_data.left_front){
+
+			update_motor(LEFT_MOTOR, CCW, 100);
+			update_motor(RIGHT_MOTOR, CCW, 85);
+
+		}
+		else{
+
+			update_motor(LEFT_MOTOR, CW, 100);
+			update_motor(RIGHT_MOTOR, CW, 85);
+
+		}
+
+		side_poll(&side_data);
+
+	}
+
+	update_motor(LEFT_MOTOR, BRAKE, 500);
+	update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+}
+
+void calibrate_right(void){
+
+
+	side_ir_data_t side_data;
+
+	side_poll(&side_data);
+
+	while( abs(side_data.right_back - side_data.right_front) >= RIGHT_DIFF_THRESHOLD){
+
+		if (side_data.right_back > side_data.right_front){
+
+			update_motor(LEFT_MOTOR, CW, 100);
+			update_motor(RIGHT_MOTOR, CW, 85);
+
+		}
+		else{
+
+			update_motor(LEFT_MOTOR, CCW, 100);
+			update_motor(RIGHT_MOTOR, CCW, 85);
+
+		}
+
+		side_poll(&side_data);
+
+	}
+
+	update_motor(LEFT_MOTOR, BRAKE, 500);
+	update_motor(RIGHT_MOTOR, BRAKE, 500);
+}
 
 
