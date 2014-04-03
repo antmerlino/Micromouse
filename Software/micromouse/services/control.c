@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <ti/sysbios/family/arm/m3/Hwi.h>
 #include <ti/sysbios/knl/Task.h>
@@ -159,8 +160,6 @@ void control_loop(){
 				update_motor(LEFT_MOTOR, CW, 0);
 				update_motor(RIGHT_MOTOR, CCW, 0);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
 				break;
 
 			case START:
@@ -187,6 +186,10 @@ void control_loop(){
 
 				}
 
+				encoders.blocks = 1;
+				encoders.left = 0;
+				encoders.right = 0;
+
 				break;
 
 			default:
@@ -198,15 +201,15 @@ void control_loop(){
 void check_distance(){
 
 	uint32_t avg_ticks;
-	avg_ticks = (right_motor_ticks + left_motor_ticks)/2;
+	avg_ticks = (encoders.right + encoders.left)/2;
 
 	switch(micromouse_state){
 
 		case STRAIGHT:
 
-			if(explore){
+			if( avg_ticks >= encoders.blocks * NUMTICKS_PER_BLOCK){
 
-				if( avg_ticks >= NUMTICKS_PER_BLOCK){
+				if(explore){
 
 					maze_update_node(walls.wall_int);
 
@@ -219,9 +222,7 @@ void check_distance(){
 					}
 
 					if( (walls.flags.front == 1) && ( (micromouse_state == TURN_AROUND) || (micromouse_state == TURN_RIGHT) || (micromouse_state == TURN_LEFT) ) ){
-
 						calibrate_front();
-
 					}
 
 					if(delay_on){
@@ -230,24 +231,24 @@ void check_distance(){
 
 						Task_sleep(1000);
 					}
-
-					left_motor_ticks = 0;
-					right_motor_ticks = 0;
 				}
-			}
-			else
-			{
-				if( avg_ticks >= NUMTICKS_PER_BLOCK){
-
+				else
+				{
 					micromouse_state = (control_state_t)*path_moves;
 					path_moves++;
-
-					first_check = 1;
-					left_motor_ticks = 0;
-					right_motor_ticks = 0;
-
 				}
+
+				if(micromouse_state == STRAIGHT){
+					encoders.blocks++;
+				}
+				else{
+					encoders.blocks = 1;
+					encoders.right = 0;
+					encoders.left = 0;
+				}
+
 			}
+
 			break;
 
 		case TURN_AROUND:
@@ -281,8 +282,8 @@ void check_distance(){
 				}
 
 				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				encoders.right = 0;
+				encoders.left = 0;
 
 			}
 			break;
@@ -318,8 +319,8 @@ void check_distance(){
 				}
 
 				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				encoders.right = 0;
+				encoders.left = 0;
 
 			}
 		break;
@@ -355,8 +356,8 @@ void check_distance(){
 				}
 
 				micromouse_state = STRAIGHT;
-				left_motor_ticks = 0;
-				right_motor_ticks = 0;
+				encoders.right = 0;
+				encoders.left = 0;
 
 			}
 		break;
@@ -366,7 +367,7 @@ void check_distance(){
 	}
 
 	if(stream_buf_encoder){
-		int len = sprintf(spf_buf_encoder, "L: %i, R: %i\r\n", left_motor_ticks, right_motor_ticks);
+		int len = sprintf(spf_buf_encoder, "L: %i, R: %i\r\n", encoders.left , encoders.right );
 		bluetooth_transmit(spf_buf_encoder, len);
 	}
 }

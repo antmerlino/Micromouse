@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
 #include <inc/hw_memmap.h>
 #include <inc/hw_types.h>
 #include <inc/hw_ints.h>

@@ -11,8 +11,13 @@
 #define ENCODER_MAX_LOW 400
 #define ENCODER_MAX_HIGH 1600
 
-extern uint32_t left_motor_ticks;
-extern uint32_t right_motor_ticks;
+typedef struct {
+	uint32_t right;
+	uint32_t left;
+	uint8_t blocks;
+} encoder_data_t;
+
+extern encoder_data_t encoders;
 
 void encoder_init();
 void left_encoder_count();

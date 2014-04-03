@@ -35,6 +35,7 @@
 
 #include "encoder.h"
 
+encoder_data_t encoders = {0, 0, 1};
 
 ti_sysbios_family_arm_m3_Hwi_Struct left_encoder_hwi;
 Hwi_Params left_encoder_hwi_params;
@@ -104,6 +105,10 @@ void encoder_init(){
 	//encoder_hwi_params.arg = (UArg)adc_hwi;
 	Hwi_construct(&right_encoder_hwi, INT_ADC0SS0, right_encoder_count, &right_encoder_hwi_params, NULL);
 
+	encoders.left = 0;
+	encoders.right = 0;
+	encoders.blocks = 1;
+
 }
 
 
@@ -111,7 +116,7 @@ void left_encoder_count(){
 
 	ADCComparatorIntClear(ADC1_BASE, 0x0F);
 
-	left_motor_ticks++;
+	encoders.left++;
 
 }
 
@@ -119,7 +124,7 @@ void right_encoder_count(){
 
 	ADCComparatorIntClear(ADC0_BASE, 0x0F);
 
-	right_motor_ticks++;
+	encoders.right++;
 
 }
 

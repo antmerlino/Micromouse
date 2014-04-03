@@ -2,31 +2,37 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include <inc/hw_memmap.h>
+#include <inc/hw_ints.h>
+
 #include <driverlib/gpio.h>
 #include <driverlib/pin_map.h>
 #include <driverlib/adc.h>
 #include <driverlib/sysctl.h>
-#include <inc/hw_ints.h>
+
+#include <ti/drivers/GPIO.h>
 
 #include <ti/sysbios/family/arm/m3/Hwi.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/BIOS.h>
 
-#include "system.h"
-#include "ir_sensor.h"
-#include "drivers/bluetooth.h"
-#include "drivers/motor.h"
-
-#include <ti/drivers/GPIO.h>
-
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/cfg/global.h>
 #include <xdc/runtime/System.h>
+
+#include "drivers/bluetooth.h"
+#include "drivers/motor.h"
+
+#include "system.h"
+
+#include "ir_sensor.h"
+
+/* --------------------------------------------------*/
 
 #define MAX_IR_DUTY 10
 
@@ -53,141 +59,141 @@ int16_t lb_offset = 0;
 
 void side_poll(side_ir_data_t * side_ir_data){
 
-		// Turn on the LEDs
-		GPIO_write(IR_SIDE_1, ON);
+	// Turn on the LEDs
+	GPIO_write(IR_SIDE_1, ON);
 
-		// Sleep so the LED can turn on
-		Task_sleep(ir_duty);
+	// Sleep so the LED can turn on
+	Task_sleep(ir_duty);
 
-		// Trigger ADC0 SS1
-		ADCProcessorTrigger(ADC0_BASE, 1);
+	// Trigger ADC0 SS1
+	ADCProcessorTrigger(ADC0_BASE, 1);
 
-		// Wait until the sample sequence has completed.
-		while(!ADCIntStatus(ADC0_BASE, 1, false))
-		{
-		}
+	// Wait until the sample sequence has completed.
+	while(!ADCIntStatus(ADC0_BASE, 1, false))
+	{
+	}
 
-		ADCIntClear(ADC0_BASE, 1);
+	ADCIntClear(ADC0_BASE, 1);
 
-		// Turn off the IR LED
-		GPIO_write(IR_SIDE_1, OFF);
+	// Turn off the IR LED
+	GPIO_write(IR_SIDE_1, OFF);
 
-		// Read ADC Value
-		ADCSequenceDataGet(ADC0_BASE, 1, &(side_ir_data->left_front));
+	// Read ADC Value
+	ADCSequenceDataGet(ADC0_BASE, 1, &(side_ir_data->left_front));
 
-		// Turn on the LEDs
-		GPIO_write(IR_SIDE_2, ON);
+	// Turn on the LEDs
+	GPIO_write(IR_SIDE_2, ON);
 
-		// Sleep so the LED can turn on
-		Task_sleep(ir_duty);
+	// Sleep so the LED can turn on
+	Task_sleep(ir_duty);
 
-		// Trigger ADC0 SS1
-		ADCProcessorTrigger(ADC0_BASE, 2);
+	// Trigger ADC0 SS1
+	ADCProcessorTrigger(ADC0_BASE, 2);
 
-		// Wait until the sample sequence has completed.
-		while(!ADCIntStatus(ADC0_BASE, 2, false))
-		{
-		}
+	// Wait until the sample sequence has completed.
+	while(!ADCIntStatus(ADC0_BASE, 2, false))
+	{
+	}
 
-		ADCIntClear(ADC0_BASE, 2);
+	ADCIntClear(ADC0_BASE, 2);
 
-		// Turn off the IR LED
-		GPIO_write(IR_SIDE_2, OFF);
+	// Turn off the IR LED
+	GPIO_write(IR_SIDE_2, OFF);
 
-		// Read ADC Value
-		ADCSequenceDataGet(ADC0_BASE, 2, &(side_ir_data->right_front));
+	// Read ADC Value
+	ADCSequenceDataGet(ADC0_BASE, 2, &(side_ir_data->right_front));
 
-		// Adjust the value for setpoints
-		side_ir_data->left_back += LB_OFFSET;
-		side_ir_data->right_back += RB_OFFSET;
-		side_ir_data->left_front += LF_OFFSET;
-		side_ir_data->right_front += RF_OFFSET;
+	// Adjust the value for setpoints
+	side_ir_data->left_back += LB_OFFSET;
+	side_ir_data->right_back += RB_OFFSET;
+	side_ir_data->left_front += LF_OFFSET;
+	side_ir_data->right_front += RF_OFFSET;
 
-		if(stream_buf){
-			int len = sprintf(spf_buf, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", side_ir_data->left_front, side_ir_data->right_front, side_ir_data->left_back, side_ir_data->right_back);
-			bluetooth_transmit(spf_buf, len);
-		}
+	if(stream_buf){
+		int len = sprintf(spf_buf, "LF: %i, RF: %i, LB: %i, RB: %i\r\n", side_ir_data->left_front, side_ir_data->right_front, side_ir_data->left_back, side_ir_data->right_back);
+		bluetooth_transmit(spf_buf, len);
+	}
 }
 
 void front_poll(uint32_t * buf){
 
 	// Turn on the LEDs
-		GPIO_write(IR_FRONT_LEFT, ON);
-		GPIO_write(IR_FRONT_RIGHT, ON);
+	GPIO_write(IR_FRONT_LEFT, ON);
+	GPIO_write(IR_FRONT_RIGHT, ON);
 
-		// Sleep so the LED can turn on
-		Task_sleep(ir_duty);
+	// Sleep so the LED can turn on
+	Task_sleep(ir_duty);
 
-		// Trigger ADC0 SS1
-		ADCProcessorTrigger(ADC1_BASE, 1);
+	// Trigger ADC0 SS1
+	ADCProcessorTrigger(ADC1_BASE, 1);
 
-		// Wait until the sample sequence has completed.
-		while(!ADCIntStatus(ADC1_BASE, 1, false))
-		{
-		}
+	// Wait until the sample sequence has completed.
+	while(!ADCIntStatus(ADC1_BASE, 1, false))
+	{
+	}
 
-		ADCIntClear(ADC1_BASE, 1);
+	ADCIntClear(ADC1_BASE, 1);
 
-		// Turn off the IR LED
-		GPIO_write(IR_FRONT_LEFT, OFF);
-		GPIO_write(IR_FRONT_RIGHT, OFF);
+	// Turn off the IR LED
+	GPIO_write(IR_FRONT_LEFT, OFF);
+	GPIO_write(IR_FRONT_RIGHT, OFF);
 
-		// Read ADC Value
-		ADCSequenceDataGet(ADC1_BASE, 1, buf);
+	// Read ADC Value
+	ADCSequenceDataGet(ADC1_BASE, 1, buf);
 
 }
 
 void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
-		uint32_t adc_data[4];
+	uint32_t adc_data[4];
 
-		front_poll(&adc_data[0]);
+	front_poll(&adc_data[0]);
 
-		//Simple front flag decision.
-		if(AVG_DATA >= FRONT_THRESHOLD){
-			walls->flags.front = 1;
-		}
-		else{
-			walls->flags.front = 0;
-		}
+	//Simple front flag decision.
+	if(AVG_DATA >= FRONT_THRESHOLD){
+		walls->flags.front = 1;
+	}
+	else{
+		walls->flags.front = 0;
+	}
 
-		//Simple left flag decision
-		if( side_data->left_front >= LEFT_THRESHOLD){
-			walls->flags.left = 1;
-		}
-		else{
-			walls->flags.left = 0;
-		}
+	//Simple left flag decision
+	if( side_data->left_front >= LEFT_THRESHOLD){
+		walls->flags.left = 1;
+	}
+	else{
+		walls->flags.left = 0;
+	}
 
-		//Simple right flag decision
-		if( side_data->right_front >= RIGHT_THRESHOLD){
-			walls->flags.right = 1;
-		}
-		else{
-			walls->flags.right = 0;
-		}
+	//Simple right flag decision
+	if( side_data->right_front >= RIGHT_THRESHOLD){
+		walls->flags.right = 1;
+	}
+	else{
+		walls->flags.right = 0;
+	}
 
-		// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
-		if((walls->flags.left == 0) && (walls->flags.right == 0 )){
-			walls->wall_diff = 0;
-		}
-		else if(walls->flags.left == 0){
-			// Using only the right IR information, try to hold the theoretical center
-			walls->wall_diff = 2*(IR_CENTERED - side_data->right_front);
-		}
-		else if(walls->flags.right ==0){
-			// Using only the left IR information, try to hold the theoretical center
-			walls->wall_diff = 2*(side_data->left_front - IR_CENTERED);
-		}
-		else{
-			// Since we have a wall on both sides, find the difference between the two averages
-			walls->wall_diff = side_data->left_front - side_data->right_front;
-		}
+	// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
+	if((walls->flags.left == 0) && (walls->flags.right == 0 )){
+		walls->wall_diff = SETPOINT;
+	}
+	else if(walls->flags.left == 0){
+		// Using only the right IR information, try to hold the theoretical center
+		walls->wall_diff = 2*(IR_CENTERED - side_data->right_front);
+	}
+	else if(walls->flags.right ==0){
+		// Using only the left IR information, try to hold the theoretical center
+		walls->wall_diff = 2*(side_data->left_front - IR_CENTERED);
+	}
+	else{
+		// Since we have a wall on both sides, find the difference between the two averages
+		walls->wall_diff = side_data->left_front - side_data->right_front;
+	}
 
-		if(stream_buf_walls){
-			int len = sprintf(spf_buf_walls, "F: %i, R: %i, B: %i, L: %i\r\n", walls->flags.front, walls->flags.right, walls->flags.back, walls->flags.left);
-			bluetooth_transmit(spf_buf_walls, len);
-		}
+	if(stream_buf_walls){
+		int len = sprintf(spf_buf_walls, "F: %i, R: %i, B: %i, L: %i\r\n", walls->flags.front, walls->flags.right, walls->flags.back, walls->flags.left);
+		bluetooth_transmit(spf_buf_walls, len);
+	}
 
 }
 
@@ -318,51 +324,51 @@ void calibrate_front(){
 	// Poll once before loop
 	front_poll(&front_data[0]);
 
-	// Square up the front before we calibrate the distance from the wall
-	while( abs(front_data[0] - front_data[1]) >= FRONT_DIFF_THRESHOLD){
-
-		// If the front left is closer, we need to turn Clockwise (Right) slightly
-		if (front_data[0] > front_data[1]){
-
-			update_motor(LEFT_MOTOR, CW, 100);
-			update_motor(RIGHT_MOTOR, CW, 85);
-
-			while(front_data[0] > front_data[1]){
-				front_poll(&front_data[0]);
-			}
-
-			update_motor(LEFT_MOTOR, CCW, 0);
-			update_motor(RIGHT_MOTOR, CCW, 0);
-
-		}
-		// If the front right is closer, we need to turn Counter-Clockwise (Left) slightly
-		else{
-
-			update_motor(LEFT_MOTOR, CCW, 100);
-			update_motor(RIGHT_MOTOR, CCW, 85);
-
-			while(front_data[0] < front_data[1]){
-				front_poll(&front_data[0]);
-			}
-
-			update_motor(LEFT_MOTOR, CCW, 0);
-			update_motor(RIGHT_MOTOR, CCW, 0);
-
-		}
-
-	}
+//	// Square up the front before we calibrate the distance from the wall
+//	while( abs(front_data[0] - front_data[1]) >= FRONT_DIFF_THRESHOLD){
+//
+//		// If the front left is closer, we need to turn Clockwise (Right) slightly
+//		if (front_data[0] > front_data[1]){
+//
+//			update_motor(LEFT_MOTOR, CW, 100);
+//			update_motor(RIGHT_MOTOR, CW, 85);
+//
+//			while(front_data[0] > front_data[1]){
+//				front_poll(&front_data[0]);
+//			}
+//
+//			update_motor(LEFT_MOTOR, CCW, 0);
+//			update_motor(RIGHT_MOTOR, CCW, 0);
+//
+//		}
+//		// If the front right is closer, we need to turn Counter-Clockwise (Left) slightly
+//		else{
+//
+//			update_motor(LEFT_MOTOR, CCW, 100);
+//			update_motor(RIGHT_MOTOR, CCW, 85);
+//
+//			while(front_data[0] < front_data[1]){
+//				front_poll(&front_data[0]);
+//			}
+//
+//			update_motor(LEFT_MOTOR, CCW, 0);
+//			update_motor(RIGHT_MOTOR, CCW, 0);
+//
+//		}
+//
+//	}
 
 	// Now that we are perpendicular to the wall, calibrate the distance
 	while( (FRONT_AVG > FRONT_THRESHOLD_UPPER) || (FRONT_AVG < FRONT_THRESHOLD_LOWER) ){
 
 		// If we are too far away from the wall move forward slowly
-		if( FRONT_AVG < FRONT_THRESHOLD_LOWER){
+		if( FRONT_AVG <= FRONT_THRESHOLD_LOWER){
 
 			// Start moving slowly forward
 			update_motor(RIGHT_MOTOR, CCW, 85);
 			update_motor(LEFT_MOTOR, CW, 100);
 
-			while(front_data[0] < FRONT_THRESHOLD_LOWER){
+			while(FRONT_AVG < FRONT_THRESHOLD_LOWER){
 				front_poll(&front_data[0]);
 			}
 
@@ -371,16 +377,14 @@ void calibrate_front(){
 			update_motor(LEFT_MOTOR, CW, 0);
 
 		}
-
-
 		// If we are too close to the wall move backward slowly
-		if(FRONT_AVG > FRONT_THRESHOLD_UPPER){
+		else{
 
 			// Start moving slowly forward
 			update_motor(RIGHT_MOTOR, CW, 85);
 			update_motor(LEFT_MOTOR, CCW, 100);
 
-			while(front_data[0] > FRONT_THRESHOLD_UPPER){
+			while(FRONT_AVG > FRONT_THRESHOLD_UPPER){
 				front_poll(&front_data[0]);
 			}
 
