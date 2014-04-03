@@ -12,8 +12,8 @@
 #define ENCODER_MAX_HIGH 1600
 
 typedef struct {
-	uint32_t right;
-	uint32_t left;
+	int32_t right;
+	int32_t left;
 	uint8_t blocks;
 } encoder_data_t;
 

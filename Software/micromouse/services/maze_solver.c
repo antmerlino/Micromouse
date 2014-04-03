@@ -67,13 +67,14 @@ void maze_update_node(int Flags)
 
 		int flipCount=rotation/90;
 		if(flipCount==0)
-			nodes[currentPositionX][currentPositionY].NodeInfo.Flags=Flags+(16);
+			nodes[currentPositionX][currentPositionY].NodeInfo.Flags=(Flags&15)+(16);
 		else if(flipCount==1)
 			nodes[currentPositionX][currentPositionY].NodeInfo.Flags=((Flags&1)<<4-flipCount)|((Flags&15)>>flipCount)+(16);
 		else if(flipCount==2)
 			nodes[currentPositionX][currentPositionY].NodeInfo.Flags=((Flags&3)<<4-flipCount)|((Flags&15)>>flipCount)+(16);
 		else if(flipCount==3)
 			nodes[currentPositionX][currentPositionY].NodeInfo.Flags=((Flags&7)<<4-flipCount)|((Flags&15)>>flipCount)+(16);
+
 	//}
 }
 

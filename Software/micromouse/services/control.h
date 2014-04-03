@@ -8,16 +8,27 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-#define SETPOINT -600
-#define TURN_SPEED 100
+#define PI 3.14159265359
 
-#define MOTOR_SPEED_OFFSET 4
+#define SETPOINT 0
+#define TURN_SPEED 85
+
+//#define MOTOR_SPEED_OFFSET 12.5 //~Full Battery
+#define MOTOR_SPEED_OFFSET 15
+
+#define WHEEL_RADIUS 15.0
+#define WHEEL_BASE 70.0
+#define NUM_TICKS_PER_REVOLUTION 150.0
+#define MM_PER_TICK (2*PI*WHEEL_RADIUS/NUM_TICKS_PER_REVOLUTION)
 
 #define INITIAL_WALLS 0x07
 
-#define NUMTICKS_PER_BLOCK 265
-#define NUMTICKS_FULL_TURN 230
-#define NUMTICKS_HALF_TURN 100
+#define NUMTICKS_PER_BLOCK 279
+#define HALF_BLOCK NUMTICKS_PER_BLOCK/2.0
+#define NUMTICKS_FULL_TURN 235
+#define NUMTICKS_HALF_TURN 118
+
+#define TRANSITION_THRESHOLD 50
 
 typedef enum {
 	RESET = -1,
@@ -42,6 +53,7 @@ void stream_walls(char* val);
 void stream_motor(char* val);
 void stream_control(char* val);
 void move_delay_tog(char* val);
+void dead_reckoning_update(void);
 
 // Switch HWI
 void ctrlSwitchFxn(void);

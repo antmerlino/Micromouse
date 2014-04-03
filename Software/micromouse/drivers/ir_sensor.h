@@ -2,9 +2,11 @@
 #define IR_ADC_SENSOR_H
 
 // Wall detection thresholds
-#define FRONT_THRESHOLD 200
+#define FRONT_THRESHOLD 275
 #define RIGHT_THRESHOLD 425
 #define LEFT_THRESHOLD 425
+#define DIAG_LEFT_THRESHOLD 300
+#define DIAG_RIGHT_THRESHOLD 300
 
 #define FRONT_THRESHOLD_UPPER 2400
 #define FRONT_THRESHOLD_LOWER 2350
@@ -43,6 +45,7 @@ typedef struct {
 	uint16_t left_sum;
 	uint16_t right_sum;
 	int32_t wall_diff;
+
 	union {
 
 		uint8_t wall_int;
@@ -52,6 +55,8 @@ typedef struct {
 			uint8_t back : 1;
 			uint8_t right : 1;
 			uint8_t front : 1;
+			uint8_t diag_left : 1;
+			uint8_t diag_right : 1;
 			uint8_t blank : 4;
 		} flags;
 	};

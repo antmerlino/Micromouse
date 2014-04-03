@@ -143,9 +143,39 @@ void front_poll(uint32_t * buf){
 
 }
 
+
+void diagonal_poll(uint32_t * buf){
+
+	// Turn on the LEDs
+	GPIO_write(IR_DIAG_LEFT, ON);
+	GPIO_write(IR_DIAG_RIGHT, ON);
+
+	// Sleep so the LED can turn on
+	Task_sleep(ir_duty);
+
+	// Trigger ADC0 SS1
+	ADCProcessorTrigger(ADC1_BASE, 2);
+
+	// Wait until the sample sequence has completed.
+	while(!ADCIntStatus(ADC1_BASE, 2, false))
+	{
+	}
+
+	ADCIntClear(ADC1_BASE, 2);
+
+	// Turn off the IR LED
+	GPIO_write(IR_DIAG_LEFT, OFF);
+	GPIO_write(IR_DIAG_RIGHT, OFF);
+
+	// Read ADC Value
+	ADCSequenceDataGet(ADC1_BASE, 2, buf);
+
+}
+
+
 void check_walls(walls_t * walls, side_ir_data_t * side_data){
 
-	uint32_t adc_data[4];
+	uint32_t adc_data[6];
 
 	front_poll(&adc_data[0]);
 
@@ -158,7 +188,7 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 
 	//Simple left flag decision
-	if( side_data->left_front >= LEFT_THRESHOLD){
+	if( side_data->left_front >= LEFT_THRESHOLD&&side_data->left_back >= LEFT_THRESHOLD){
 		walls->flags.left = 1;
 	}
 	else{
@@ -166,12 +196,29 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 
 	//Simple right flag decision
-	if( side_data->right_front >= RIGHT_THRESHOLD){
+	if( side_data->right_front >= RIGHT_THRESHOLD&&side_data->right_back >= RIGHT_THRESHOLD){
 		walls->flags.right = 1;
 	}
 	else{
 		walls->flags.right = 0;
 	}
+
+	diagonal_poll(&adc_data[2]);
+
+	if(adc_data[2] >= DIAG_LEFT_THRESHOLD){
+		walls->flags.diag_left = 1;
+	}
+	else{
+		walls->flags.diag_left = 0;
+	}
+
+	if(adc_data[3] >= DIAG_RIGHT_THRESHOLD){
+		walls->flags.diag_right = 1;
+	}
+	else{
+		walls->flags.diag_right = 0;
+	}
+
 
 	// If there is a missing wall on both sides, we'll just use the encoder data, so set the ir_diff = 0
 	if((walls->flags.left == 0) && (walls->flags.right == 0 )){
@@ -179,11 +226,11 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 	else if(walls->flags.left == 0){
 		// Using only the right IR information, try to hold the theoretical center
-		walls->wall_diff = 2*(IR_CENTERED - side_data->right_front);
+		walls->wall_diff = IR_CENTERED - side_data->right_front;
 	}
-	else if(walls->flags.right ==0){
+	else if(walls->flags.right == 0){
 		// Using only the left IR information, try to hold the theoretical center
-		walls->wall_diff = 2*(side_data->left_front - IR_CENTERED);
+		walls->wall_diff = side_data->left_front - IR_CENTERED;
 	}
 	else{
 		// Since we have a wall on both sides, find the difference between the two averages
@@ -370,6 +417,8 @@ void calibrate_front(){
 
 			while(FRONT_AVG < FRONT_THRESHOLD_LOWER){
 				front_poll(&front_data[0]);
+				int len = sprintf(spf_buf_walls, "F: %i\r\n", FRONT_AVG);
+				bluetooth_transmit(spf_buf_walls, len);
 			}
 
 			// Turn the motors off
@@ -386,6 +435,8 @@ void calibrate_front(){
 
 			while(FRONT_AVG > FRONT_THRESHOLD_UPPER){
 				front_poll(&front_data[0]);
+				int len = sprintf(spf_buf_walls, "F: %i\r\n", FRONT_AVG);
+				bluetooth_transmit(spf_buf_walls, len);
 			}
 
 			// Turn the motors off
