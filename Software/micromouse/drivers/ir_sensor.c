@@ -519,6 +519,8 @@ void calibrate_left(void){
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
 
+	Task_sleep(250);
+
 }
 
 void calibrate_right(void){
@@ -563,6 +565,8 @@ void calibrate_right(void){
 
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+	Task_sleep(250);
 
 }
 

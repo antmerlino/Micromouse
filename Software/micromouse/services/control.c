@@ -56,7 +56,7 @@ typedef struct  {
 
 dead_reckoning_t encoder_estimation = {0, 0, 0, 0, 0, 0};
 
-straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 200};
+straight_pid_params_t straight_control_params = {1.0, 1.0, 0.0, 200};
 
 //const float distancePerCount = PI*(2*(float)WHEEL_RADIUS/(float)NUM_TICKS_PER_REVOLUTION);
 //const float radiansPerCount = PI*(2*(float)WHEEL_RADIUS/(float)WHEEL_BASE) / (float)NUM_TICKS_PER_REVOLUTION;
@@ -137,34 +137,6 @@ void control_loop(){
 
 			case STRAIGHT:
 
-//				dead_reckoning_update();
-
-//				str_len = sprintf(buf, "X: %3f, Y: %3f, A: %3f\r\n", encoder_estimation.x, encoder_estimation.y, encoder_estimation.theta);
-//				bluetooth_transmit(buf, str_len);
-
-//				Task_sleep(1);
-//
-//				str_len = sprintf(buf, "dX: %3f, dY: %3f, dA: %3f\r\n",  encoder_estimation.deltaX, encoder_estimation.deltaY, encoder_estimation.deltaTheta);
-//				bluetooth_transmit(buf, str_len);
-
-//				*buf_ptr = pid_step(&side_pid, SETPOINT, walls.wall_diff, (float)get_curr_time_us())/100.0;
-//				buf_ptr = buf_ptr++;
-//
-//				str_len = sprintf(buf, "En: %f\r\n",  *buf_ptr);
-//				bluetooth_transmit(buf, str_len);
-//
-//				if(buf_ptr > buf_tail){
-//					buf_ptr = buf_head;
-//				}
-//
-//				error = 0;
-//				uint8_t i;
-//				for(i = 0; i < LPF_SIZE; i++){
-//					error += error_buf[i];
-//				}
-//
-//				error /= (float)LPF_SIZE;
-
 				if( (!walls.flags.right && !walls.flags.left ) || (transition_region) ){
 					error = 0;
 				}
@@ -208,8 +180,8 @@ void control_loop(){
 			case TURN_AROUND:
 
 //				if(turn_around_dir){
-					update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
-					update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
+					update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
+					update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
 //				}
 //				else{
 //					update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
@@ -221,15 +193,15 @@ void control_loop(){
 
 			case TURN_RIGHT:
 
-				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
-				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
+				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
+				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
 			case TURN_LEFT:
 
-				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
-				update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET);
+				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
+				update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
