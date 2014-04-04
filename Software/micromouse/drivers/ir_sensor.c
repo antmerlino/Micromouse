@@ -52,6 +52,8 @@ char spf_buf[80];
 bool stream_buf = false;
 uint8_t ir_duty = 1;
 
+ir_cal_t ir_cal_vals = {0,0,0};
+
 int16_t rb_offset = 0;
 int16_t rf_offset = 0;
 int16_t lf_offset = 0;
@@ -143,6 +145,31 @@ void front_poll(uint32_t * buf){
 
 }
 
+#define CAL_LPF_VALS 5
+void cal_center(side_ir_data_t * side_ir_data) {
+	// 180 degrees, so make sure to use opposites
+	// Get LPF Values for left front and right front
+	uint32_t avg_right_side = 0;
+	uint32_t avg_left_side = 0;
+
+	uint32_t adc_data[4];
+
+	int i = 0;
+	for(i = 0; i < CAL_LPF_VALS; i++) {
+		side_poll(side_ir_data);
+		avg_right_side += side_ir_data->left_front;
+		avg_left_side += side_ir_data->right_front;
+	}
+	ir_cal_vals.side_center_left = avg_left_side/CAL_LPF_VALS;
+	ir_cal_vals.side_center_right = avg_right_side/CAL_LPF_VALS;
+
+	for(i = 0; i < CAL_LPF_VALS; i++) {
+		front_poll(&adc_data[0]);
+		ir_cal_vals.front_center += AVG_DATA;
+	}
+
+	ir_cal_vals.front_center = ir_cal_vals.front_center/CAL_LPF_VALS;
+}
 
 void diagonal_poll(uint32_t * buf){
 
@@ -188,7 +215,7 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 
 	//Simple left flag decision
-	if( side_data->left_front >= LEFT_THRESHOLD&&side_data->left_back >= LEFT_THRESHOLD){
+	if( side_data->left_front >= LEFT_THRESHOLD && side_data->left_back >= LEFT_THRESHOLD){
 		walls->flags.left = 1;
 	}
 	else{
@@ -196,7 +223,7 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 
 	//Simple right flag decision
-	if( side_data->right_front >= RIGHT_THRESHOLD&&side_data->right_back >= RIGHT_THRESHOLD){
+	if( side_data->right_front >= RIGHT_THRESHOLD && side_data->right_back >= RIGHT_THRESHOLD){
 		walls->flags.right = 1;
 	}
 	else{
@@ -226,11 +253,11 @@ void check_walls(walls_t * walls, side_ir_data_t * side_data){
 	}
 	else if(walls->flags.left == 0){
 		// Using only the right IR information, try to hold the theoretical center
-		walls->wall_diff = IR_CENTERED - side_data->right_front;
+		walls->wall_diff = 2*(ir_cal_vals.side_center_right - side_data->right_front);
 	}
 	else if(walls->flags.right == 0){
 		// Using only the left IR information, try to hold the theoretical center
-		walls->wall_diff = side_data->left_front - IR_CENTERED;
+		walls->wall_diff = 2*(side_data->left_front - ir_cal_vals.side_center_right);
 	}
 	else{
 		// Since we have a wall on both sides, find the difference between the two averages
@@ -406,19 +433,17 @@ void calibrate_front(){
 //	}
 
 	// Now that we are perpendicular to the wall, calibrate the distance
-	while( (FRONT_AVG > FRONT_THRESHOLD_UPPER) || (FRONT_AVG < FRONT_THRESHOLD_LOWER) ){
+	while( (FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD) || (FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD) ){
 
 		// If we are too far away from the wall move forward slowly
-		if( FRONT_AVG <= FRONT_THRESHOLD_LOWER){
+		if( FRONT_AVG <=  ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
 
 			// Start moving slowly forward
 			update_motor(RIGHT_MOTOR, CCW, 85);
 			update_motor(LEFT_MOTOR, CW, 100);
 
-			while(FRONT_AVG < FRONT_THRESHOLD_LOWER){
+			while(FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
 				front_poll(&front_data[0]);
-				int len = sprintf(spf_buf_walls, "F: %i\r\n", FRONT_AVG);
-				bluetooth_transmit(spf_buf_walls, len);
 			}
 
 			// Turn the motors off
@@ -433,10 +458,8 @@ void calibrate_front(){
 			update_motor(RIGHT_MOTOR, CW, 85);
 			update_motor(LEFT_MOTOR, CCW, 100);
 
-			while(FRONT_AVG > FRONT_THRESHOLD_UPPER){
+			while(FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD){
 				front_poll(&front_data[0]);
-				int len = sprintf(spf_buf_walls, "F: %i\r\n", FRONT_AVG);
-				bluetooth_transmit(spf_buf_walls, len);
 			}
 
 			// Turn the motors off

@@ -8,8 +8,7 @@
 #define DIAG_LEFT_THRESHOLD 300
 #define DIAG_RIGHT_THRESHOLD 300
 
-#define FRONT_THRESHOLD_UPPER 2400
-#define FRONT_THRESHOLD_LOWER 2350
+#define AVG_FRONT_THRESHOLD 25
 
 #define FRONT_DIFF_THRESHOLD 50
 #define LEFT_DIFF_THRESHOLD 50
@@ -20,7 +19,11 @@
 #define LB_OFFSET -45
 #define RB_OFFSET 20
 
-#define IR_CENTERED 1500
+typedef struct {
+	int32_t side_center_left;
+	int32_t side_center_right;
+	int32_t front_center;
+} ir_cal_t;
 
 typedef union {
 
@@ -64,6 +67,7 @@ typedef struct {
 
 
 void ir_sensor_init(void);
+void cal_center(side_ir_data_t * side_ir_data);
 void check_walls(walls_t * walls, side_ir_data_t * side_data);
 void side_poll(side_ir_data_t * side_ir_data);
 void front_poll(uint32_t * buf);

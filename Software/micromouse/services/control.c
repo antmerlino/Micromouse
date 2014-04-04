@@ -56,8 +56,7 @@ typedef struct  {
 
 dead_reckoning_t encoder_estimation = {0, 0, 0, 0, 0, 0};
 
-straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 200};
-
+straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 250};
 
 //const float distancePerCount = PI*(2*(float)WHEEL_RADIUS/(float)NUM_TICKS_PER_REVOLUTION);
 //const float radiansPerCount = PI*(2*(float)WHEEL_RADIUS/(float)WHEEL_BASE) / (float)NUM_TICKS_PER_REVOLUTION;
@@ -127,7 +126,7 @@ void control_loop(){
 
 	while(1){
 
-		Semaphore_pend(drive_straight_sem_handle, BIOS_WAIT_FOREVER);
+//		Semaphore_pend(drive_straight_sem_handle, BIOS_WAIT_FOREVER);
 
 		check_distance();
 
@@ -252,6 +251,8 @@ void control_loop(){
 				if(explore){
 
 					maze_clear();
+					maze_set_start_rotation(180); // Assuming we are starting backwards
+					cal_center(&side_data);
 					maze_update_node(INITIAL_WALLS);
 
 					micromouse_state = (control_state_t) maze_next_direction_dfs();
@@ -262,13 +263,6 @@ void control_loop(){
 
 					micromouse_state = (control_state_t)*path_moves;
 					path_moves++;
-
-//					uint8_t i;
-//					for(i = 0; i < 16; i++){
-						str_len = sprintf(buf, "M: %i\r\n", micromouse_state);
-						bluetooth_transmit(buf, str_len);
-//						path_moves++;
-//					}
 
 				}
 
@@ -613,6 +607,7 @@ void control_init(){
 	encoder_estimation.theta = 0;
 	encoder_estimation.x = 0;
 	encoder_estimation.y = 0;
+
 }
 
 void set_pid_kp(char* val) {
