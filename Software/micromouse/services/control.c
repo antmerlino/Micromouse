@@ -56,7 +56,8 @@ typedef struct  {
 
 dead_reckoning_t encoder_estimation = {0, 0, 0, 0, 0, 0};
 
-straight_pid_params_t straight_control_params = {1.0, 1.0, 0.0, 200};
+//straight_pid_params_t straight_control_params = {1.0, 1.0, 0.0, 200};
+straight_pid_params_t straight_control_params = {0.8, 0.8, 0.0, 200};
 
 //const float distancePerCount = PI*(2*(float)WHEEL_RADIUS/(float)NUM_TICKS_PER_REVOLUTION);
 //const float radiansPerCount = PI*(2*(float)WHEEL_RADIUS/(float)WHEEL_BASE) / (float)NUM_TICKS_PER_REVOLUTION;
@@ -227,13 +228,17 @@ void control_loop(){
 					cal_center(&side_data);
 					maze_update_node(INITIAL_WALLS);
 
-					micromouse_state = (control_state_t) maze_next_direction_dfs();
+					if(micromouse_state != RESET){
+						micromouse_state = (control_state_t) maze_next_direction_dfs();
+					}
 				}
 				else{
 
-					path_moves = maze_dijkstras_algorithm(0, 0, 3, 3);
+					path_moves = maze_dijkstras_algorithm(0, 0, 2, 2);
 
-					micromouse_state = (control_state_t)*path_moves;
+					if(micromouse_state != RESET){
+						micromouse_state = (control_state_t)*path_moves;
+					}
 					path_moves++;
 
 				}
@@ -279,13 +284,17 @@ void check_distance(){
 
 					maze_update_node( walls.wall_int );
 
-					micromouse_state = (control_state_t) maze_next_direction_dfs();
+					if(micromouse_state != RESET){
+						micromouse_state = (control_state_t) maze_next_direction_dfs();
+					}
 
 				}
 				else
 				{
-					micromouse_state = (control_state_t)*path_moves;
-					path_moves++;
+					if(micromouse_state != RESET){
+						micromouse_state = (control_state_t)*path_moves;
+						path_moves++;
+					}
 				}
 
 				if(micromouse_state != STRAIGHT){
@@ -333,10 +342,16 @@ void check_distance(){
 				}
 
 				if(micromouse_state == RESET){
+					if(explore){
+						micromouse_state = START;
+					}
 					explore = 0;
 					if(walls.flags.front){
 						calibrate_front();
 					}
+
+
+
 				}
 
 			}
@@ -403,7 +418,9 @@ void check_distance(){
 					calibrate_right();
 				}
 
-				micromouse_state = STRAIGHT;
+				if(micromouse_state != RESET){
+					micromouse_state = STRAIGHT;
+				}
 				encoders.right = 0;
 				encoders.left = 0;
 
@@ -446,7 +463,10 @@ void check_distance(){
 					calibrate_right();
 				}
 
-				micromouse_state = STRAIGHT;
+				if(micromouse_state != RESET){
+					micromouse_state = STRAIGHT;
+				}
+
 				encoders.right = 0;
 				encoders.left = 0;
 
@@ -487,7 +507,10 @@ void check_distance(){
 					calibrate_right();
 				}
 
-				micromouse_state = STRAIGHT;
+				if(micromouse_state != RESET){
+					micromouse_state = STRAIGHT;
+				}
+
 				encoders.right = 0;
 				encoders.left = 0;
 

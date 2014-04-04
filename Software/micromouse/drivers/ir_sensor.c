@@ -439,7 +439,7 @@ void calibrate_front(){
 		if( FRONT_AVG <=  ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
 
 			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CCW, 85);
+			update_motor(RIGHT_MOTOR, CCW, 90);
 			update_motor(LEFT_MOTOR, CW, 100);
 
 			while(FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
@@ -455,7 +455,7 @@ void calibrate_front(){
 		else{
 
 			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CW, 85);
+			update_motor(RIGHT_MOTOR, CW, 90);
 			update_motor(LEFT_MOTOR, CCW, 100);
 
 			while(FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD){
@@ -488,7 +488,7 @@ void calibrate_left(void){
 		if (side_data.left_back > side_data.left_front){
 
 			update_motor(LEFT_MOTOR, CCW, 100);
-			update_motor(RIGHT_MOTOR, CCW, 85);
+			update_motor(RIGHT_MOTOR, CCW, 90);
 
 			while(side_data.left_back > side_data.left_front){
 				side_poll(&side_data);
@@ -501,7 +501,7 @@ void calibrate_left(void){
 		else{
 
 			update_motor(LEFT_MOTOR, CW, 100);
-			update_motor(RIGHT_MOTOR, CW, 85);
+			update_motor(RIGHT_MOTOR, CW, 90);
 
 			while(side_data.left_back < side_data.left_front){
 				side_poll(&side_data);
@@ -535,7 +535,7 @@ void calibrate_right(void){
 		if (side_data.right_back > side_data.right_front){
 
 			update_motor(LEFT_MOTOR, CW, 100);
-			update_motor(RIGHT_MOTOR, CW, 85);
+			update_motor(RIGHT_MOTOR, CW, 90);
 
 			while(side_data.right_back > side_data.right_front){
 				side_poll(&side_data);
@@ -548,7 +548,7 @@ void calibrate_right(void){
 		else{
 
 			update_motor(LEFT_MOTOR, CCW, 100);
-			update_motor(RIGHT_MOTOR, CCW, 85);
+			update_motor(RIGHT_MOTOR, CCW, 90);
 
 			while(side_data.right_back < side_data.right_front){
 				side_poll(&side_data);
