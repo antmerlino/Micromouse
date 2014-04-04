@@ -56,7 +56,7 @@ typedef struct  {
 
 dead_reckoning_t encoder_estimation = {0, 0, 0, 0, 0, 0};
 
-straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 250};
+straight_pid_params_t straight_control_params = {1.0, 1.0, 1.0, 200};
 
 //const float distancePerCount = PI*(2*(float)WHEEL_RADIUS/(float)NUM_TICKS_PER_REVOLUTION);
 //const float radiansPerCount = PI*(2*(float)WHEEL_RADIUS/(float)WHEEL_BASE) / (float)NUM_TICKS_PER_REVOLUTION;
@@ -126,7 +126,7 @@ void control_loop(){
 
 	while(1){
 
-//		Semaphore_pend(drive_straight_sem_handle, BIOS_WAIT_FOREVER);
+		Semaphore_pend(drive_straight_sem_handle, BIOS_WAIT_FOREVER);
 
 		check_distance();
 
@@ -137,7 +137,7 @@ void control_loop(){
 
 			case STRAIGHT:
 
-				dead_reckoning_update();
+//				dead_reckoning_update();
 
 //				str_len = sprintf(buf, "X: %3f, Y: %3f, A: %3f\r\n", encoder_estimation.x, encoder_estimation.y, encoder_estimation.theta);
 //				bluetooth_transmit(buf, str_len);
@@ -362,7 +362,9 @@ void check_distance(){
 
 				if(micromouse_state == RESET){
 					explore = 0;
-					calibrate_front();
+					if(walls.flags.front){
+						calibrate_front();
+					}
 				}
 
 			}
