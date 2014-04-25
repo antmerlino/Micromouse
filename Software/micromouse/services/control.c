@@ -45,22 +45,8 @@ typedef struct straight_pid_params_t {
 	uint32_t motor_speed;
 }straight_pid_params_t;
 
-typedef struct  {
-	float theta;
-	float x;
-	float y;
-	float deltaX;
-	float deltaY;
-	float deltaTheta;
-} dead_reckoning_t;
 
-dead_reckoning_t encoder_estimation = {0, 0, 0, 0, 0, 0};
-
-//straight_pid_params_t straight_control_params = {1.0, 1.0, 0.0, 200};
-straight_pid_params_t straight_control_params = {0.8, 0.8, 0.0, 200};
-
-//const float distancePerCount = PI*(2*(float)WHEEL_RADIUS/(float)NUM_TICKS_PER_REVOLUTION);
-//const float radiansPerCount = PI*(2*(float)WHEEL_RADIUS/(float)WHEEL_BASE) / (float)NUM_TICKS_PER_REVOLUTION;
+straight_pid_params_t straight_control_params = {2, 1.0, 0.0, 200};
 
 Semaphore_Handle drive_straight_sem_handle;
 Semaphore_Params drive_straight_sem_params;
@@ -68,7 +54,9 @@ Semaphore_Params drive_straight_sem_params;
 walls_t walls;
 
 uint8_t explore = 1;
-uint8_t first_check = 1;
+uint8_t restart_flag = 0;
+
+uint8_t flood = 1;
 
 side_ir_data_t side_data;
 
@@ -91,10 +79,18 @@ bool delay_on = false;
 
 bool stop_control_loop = true;
 
+uint8_t startingpos = 0;
+uint8_t maze_location_flag = 1;
+
 uint8_t transition_region = 0;
 
 uint8_t turn_around_dir = 0;
-uint8_t turn_around_cal_flag = 1;
+uint8_t turn_around_cal_flag = 0;
+
+uint32_t right_previous_ticks = 0;
+uint32_t left_previous_ticks = 0;
+
+float motor_offset = 15;
 
 #define CENTER_TRANSITION_REGION ((encoders.blocks * NUMTICKS_PER_BLOCK) - HALF_BLOCK)
 
@@ -106,7 +102,6 @@ void control_loop(){
 
 	int32_t ir_diff;
 	int32_t encoder_diff;
-
 
 	float measurement;
 
@@ -138,12 +133,34 @@ void control_loop(){
 
 			case STRAIGHT:
 
+
 				if( (!walls.flags.right && !walls.flags.left ) || (transition_region) ){
+
+//					if( (encoders.left - left_previous_ticks) > (encoders.right - right_previous_ticks)){
+//						motor_offset /= MOTOR_OFFSET_UPDATE;
+//					}
+//
+//					if( (encoders.left - left_previous_ticks) < (encoders.right - right_previous_ticks)){
+//						motor_offset *= MOTOR_OFFSET_UPDATE;
+//					}
+
 					error = 0;
 				}
 				else{
+
+//					if( (encoders.left - left_previous_ticks) > (encoders.right - right_previous_ticks) && error > 0){
+//						motor_offset /= MOTOR_OFFSET_UPDATE;
+//					}
+//
+//					if( (encoders.left - left_previous_ticks) < (encoders.right - right_previous_ticks) && error < 0){
+//						motor_offset *= MOTOR_OFFSET_UPDATE;
+//					}
+
 					error = pid_step(&side_pid, SETPOINT, walls.wall_diff, (float)get_curr_time_us())/100.0;
 				}
+
+//				left_previous_ticks = encoders.left;
+//				right_previous_ticks = encoders.right;
 
 				str_len = sprintf(buf, "E: %f\r\n",  error);
 				bluetooth_transmit(buf, str_len);
@@ -180,29 +197,29 @@ void control_loop(){
 
 			case TURN_AROUND:
 
-//				if(turn_around_dir){
-					update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
-					update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
-//				}
-//				else{
-//					update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
-//					update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET);
-//				}
+				if(turn_around_dir){
+					update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+					update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
+				}
+				else{
+					update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+					update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET);
+				}
 
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
 			case TURN_RIGHT:
 
-				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
-				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
+				update_motor(RIGHT_MOTOR, CW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+				update_motor(LEFT_MOTOR, CW, TURN_SPEED + MOTOR_SPEED_OFFSET);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
 			case TURN_LEFT:
 
-				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET/2);
-				update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET/2);
+				update_motor(RIGHT_MOTOR, CCW, TURN_SPEED - MOTOR_SPEED_OFFSET);
+				update_motor(LEFT_MOTOR, CCW, TURN_SPEED + MOTOR_SPEED_OFFSET);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
 				break;
 
@@ -211,6 +228,7 @@ void control_loop(){
 				update_motor(LEFT_MOTOR, CW, 0);
 				update_motor(RIGHT_MOTOR, CCW, 0);
 				pid_init(&side_pid, straight_control_params.kp, straight_control_params.ki, straight_control_params.kd, (float)get_curr_time_us());
+
 				break;
 
 			case START:
@@ -224,17 +242,23 @@ void control_loop(){
 				if(explore){
 
 					maze_clear();
+					maze_init_ff();
 					maze_set_start_rotation(180); // Assuming we are starting backwards
 					cal_center(&side_data);
 					maze_update_node(INITIAL_WALLS);
 
 					if(micromouse_state != RESET){
-						micromouse_state = (control_state_t) maze_next_direction_dfs();
+						micromouse_state = (control_state_t) maze_next_direction_ff();
 					}
 				}
 				else{
 
-					path_moves = maze_dijkstras_algorithm(0, 0, 2, 2);
+					if(startingpos){
+						path_moves = maze_dijkstras_algorithm(15, 0, 8, 8);
+					}
+					else{
+						path_moves = maze_dijkstras_algorithm(0, 0, 8, 8);
+					}
 
 					if(micromouse_state != RESET){
 						micromouse_state = (control_state_t)*path_moves;
@@ -246,6 +270,8 @@ void control_loop(){
 				encoders.blocks = 1;
 				encoders.left = 0;
 				encoders.right = 0;
+				right_previous_ticks = 0;
+				left_previous_ticks = 0;
 
 				break;
 
@@ -271,7 +297,7 @@ void check_distance(){
 				transition_region = 0;
 			}
 
-			if( (avg_ticks >= encoders.blocks * NUMTICKS_PER_BLOCK) || (walls.flags.front && (avg_ticks >= encoders.blocks * NUMTICKS_PER_BLOCK - 60)) ){
+			if( (avg_ticks >= encoders.blocks * NUMTICKS_PER_BLOCK) || (walls.flags.front && (avg_ticks >= encoders.blocks * NUMTICKS_PER_BLOCK - 80)) ){
 
 				if(walls.flags.front){
 					calibrate_front();
@@ -282,11 +308,43 @@ void check_distance(){
 
 				if(explore){
 
-					maze_update_node( walls.wall_int );
-
 					if(micromouse_state != RESET){
-						micromouse_state = (control_state_t) maze_next_direction_dfs();
+						if(!walls.flags.left && maze_location_flag){
+							micromouse_state = TURN_AROUND;
+							startingpos = 1;
+						}
+						else if(!walls.flags.right && maze_location_flag){
+							maze_location_flag = 0;
+							maze_update_node( walls.wall_int );
+							micromouse_state = (control_state_t) maze_next_direction_ff();
+						}
+						else if(maze_location_flag){
+							if(walls.flags.front){
+								maze_location_flag = 0;
+								maze_clear();
+								maze_init_ff();
+								maze_set_start_point(15, 0);
+								maze_set_start_rotation(180);
+								maze_update_node(INITIAL_WALLS);
+								micromouse_state = (control_state_t) maze_next_direction_ff();
+							}
+							else{
+								micromouse_state = STRAIGHT;
+							}
+						}
+						else{
+							maze_update_node( walls.wall_int );
+							if(flood){
+								micromouse_state = (control_state_t) maze_next_direction_ff();
+							}
+							else{
+								micromouse_state = (control_state_t) maze_next_direction_dfs();
+							}
+
+						}
 					}
+
+					check_walls(&walls, &side_data);
 
 				}
 				else
@@ -313,11 +371,13 @@ void check_distance(){
 				// If we are about to turn left AND we have a wall on our right, calibrate against the right wall
 				if(micromouse_state == TURN_LEFT && walls.flags.right){
 					calibrate_right();
+					micromouse_state = TURN_RIGHT;
 				}
 
 				// If we are about to turn right AND we have a wall on our left, calibrate against the left wall
 				if(micromouse_state == TURN_RIGHT && walls.flags.left){
 					calibrate_left();
+					micromouse_state = TURN_LEFT;
 				}
 
 				// If we are about to turn around AND we have a wall on our right, calibrate against the right wall
@@ -332,6 +392,21 @@ void check_distance(){
 					turn_around_dir = 0;
 				}
 
+				// If we are turning right, and there's no wall in front, we won't be able to calibrate the turn once completed,
+				// To remedy this, we check if there is a right wall, if so, we should turn towards it first, then calibrate,
+				// then turn around
+				if( micromouse_state == TURN_RIGHT && walls.flags.left && !walls.flags.front){
+					micromouse_state = TURN_LEFT;
+				}
+
+				// If we are turning left, and there's no wall in front, we won't be able to calibrate the turn once completed,
+				// To remedy this, we check if there is a left wall, if so, we should turn towards it first, then calibrate,
+				// then turn around
+				if( micromouse_state == TURN_LEFT && walls.flags.right && !walls.flags.front){
+					micromouse_state = TURN_RIGHT;
+				}
+
+
 				if(micromouse_state == STRAIGHT){
 					encoders.blocks++;
 				}
@@ -339,19 +414,25 @@ void check_distance(){
 					encoders.blocks = 1;
 					encoders.right = 0;
 					encoders.left = 0;
+					right_previous_ticks = 0;
+					left_previous_ticks = 0;
 				}
 
 				if(micromouse_state == RESET){
-					if(explore){
+
+					if(flood){
+						flood = 0;
+						restart_flag = 1;
+						micromouse_state = (control_state_t) maze_next_direction_dfs();
+					}
+					else{
+						explore = 0;
 						micromouse_state = START;
 					}
-					explore = 0;
+
 					if(walls.flags.front){
 						calibrate_front();
 					}
-
-
-
 				}
 
 			}
@@ -359,36 +440,46 @@ void check_distance(){
 			break;
 
 		case TURN_AROUND:
-//
-//			if(avg_ticks >= NUMTICKS_HALF_TURN && turn_around_cal_flag){
-//
-//				// Brake!
-//				update_motor(LEFT_MOTOR, BRAKE, 500);
-//				update_motor(RIGHT_MOTOR, BRAKE, 500);
-//
-//				Task_sleep(250);
-//
-//				if(walls.flags.right){
-//					calibrate_right();
-//				}
-//				if(walls.flags.left){
-//					calibrate_left();
-//				}
-//
-//				uint8_t i;
-//				for(i = 0; i < 5; i++)
-//				{
-//				side_poll(&side_data);
-//				check_walls(&walls, &side_data);
-//				}
-//
-//				if(walls.flags.front){
-//					calibrate_front();
-//				}
-//
-//				turn_around_cal_flag = 0;
-//
-//			}
+
+			if(avg_ticks >= NUMTICKS_HALF_TURN && turn_around_cal_flag){
+
+				// Brake!
+				update_motor(LEFT_MOTOR, BRAKE, 500);
+				update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+				Task_sleep(250);
+
+				if(walls.flags.right){
+					calibrate_right();
+				}
+				if(walls.flags.left){
+					calibrate_left();
+				}
+
+				uint8_t i;
+				for(i = 0; i < 5; i++)
+				{
+				side_poll(&side_data);
+				check_walls(&walls, &side_data);
+				}
+
+				if(walls.flags.front){
+					calibrate_front();
+				}
+
+				turn_around_cal_flag = 0;
+
+				encoders.left = 0;
+				encoders.right = 0;
+
+				if(turn_around_dir){
+					micromouse_state = TURN_RIGHT;
+				}
+				else{
+					micromouse_state = TURN_LEFT;
+				}
+
+			}
 
 			if(avg_ticks >= NUMTICKS_FULL_TURN){
 
@@ -423,10 +514,8 @@ void check_distance(){
 				}
 				encoders.right = 0;
 				encoders.left = 0;
-
-				encoder_estimation.theta = 0;
-				encoder_estimation.x = 0;
-				encoder_estimation.y = 0;
+				right_previous_ticks = 0;
+				left_previous_ticks = 0;
 
 				turn_around_cal_flag = 1;
 
@@ -446,8 +535,8 @@ void check_distance(){
 				uint8_t i;
 				for(i = 0; i < 5; i++)
 				{
-				side_poll(&side_data);
-				check_walls(&walls, &side_data);
+					side_poll(&side_data);
+					check_walls(&walls, &side_data);
 				}
 
 				if(walls.flags.left && walls.flags.right){
@@ -467,12 +556,17 @@ void check_distance(){
 					micromouse_state = STRAIGHT;
 				}
 
+				if(walls.flags.front){
+					calibrate_front();
+					square_front();
+					calibrate_front();
+					micromouse_state = TURN_AROUND;
+				}
+
 				encoders.right = 0;
 				encoders.left = 0;
-
-				encoder_estimation.theta = 0;
-				encoder_estimation.x = 0;
-				encoder_estimation.y = 0;
+				right_previous_ticks = 0;
+				left_previous_ticks = 0;
 
 			}
 		break;
@@ -507,17 +601,22 @@ void check_distance(){
 					calibrate_right();
 				}
 
+
 				if(micromouse_state != RESET){
 					micromouse_state = STRAIGHT;
 				}
 
+				if(walls.flags.front){
+					calibrate_front();
+					square_front();
+					calibrate_front();
+					micromouse_state = TURN_AROUND;
+				}
+
 				encoders.right = 0;
 				encoders.left = 0;
-
-				encoder_estimation.theta = 0;
-				encoder_estimation.x = 0;
-				encoder_estimation.y = 0;
-
+				right_previous_ticks = 0;
+				left_previous_ticks = 0;
 			}
 		break;
 
@@ -530,58 +629,7 @@ void check_distance(){
 		bluetooth_transmit(spf_buf_encoder, len);
 	}
 }
-uint16_t previousLeft=0;
-uint16_t previousRight=0;
 
-void dead_reckoning_reset(void){
-	previousLeft=0;
-	previousRight=0;
-}
-
-
-void dead_reckoning_update(void){
-
-	if(encoders.left - previousLeft  < 0 )
-		previousLeft=0;
-
-	if(encoders.right - previousRight<0)
-		previousRight=0;
-
-
-	float deltaLeft = encoders.left - previousLeft;
-	float deltaRight = encoders.right - previousRight;
-
-//	float deltaDistance = 0.5*(float)(deltaLeft+deltaRight)*distancePerCount;
-//
-//	encoder_estimation.deltaTheta = (deltaRight-deltaLeft)*radiansPerCount;
-//	encoder_estimation.theta += encoder_estimation.deltaTheta;
-//
-//	encoder_estimation.deltaX = deltaDistance * (float)cos(encoder_estimation.theta);
-//	encoder_estimation.deltaY = deltaDistance * (float)sin(encoder_estimation.theta);
-//
-//	encoder_estimation.x += encoder_estimation.deltaX;//WHEEL_RADIUS * cos(encoder_estimation.theta) * (encoders.right + encoders.left) * (PI/NUM_TICKS_PER_REVOLUTION);
-//
-//	encoder_estimation.y += encoder_estimation.deltaY;//WHEEL_RADIUS * sin(encoder_estimation.theta) * (encoders.right + encoders.left) * (PI/NUM_TICKS_PER_REVOLUTION);
-//
-//
-	previousLeft=encoders.left;
-	previousRight=encoders.right;
-
-	float left_mm = (float) (deltaLeft*MM_PER_TICK);
-	float right_mm = (float) (deltaRight*MM_PER_TICK);
-
-	float deltaDistance = (left_mm + right_mm)/2;
-
-	encoder_estimation.deltaTheta = (right_mm - left_mm)/(WHEEL_BASE);
-	encoder_estimation.theta += encoder_estimation.deltaTheta;
-
-	encoder_estimation.deltaX = deltaDistance * cos(encoder_estimation.theta);
-	encoder_estimation.deltaY = deltaDistance * sin(encoder_estimation.theta);
-
-	encoder_estimation.x += encoder_estimation.deltaX;
-	encoder_estimation.y += encoder_estimation.deltaY;
-
-}
 
 void control_open() {
 	GPIO_enableInt(INPUT_CTRL_SWITCH, GPIO_INT_BOTH_EDGES); // Enable interrupts
@@ -601,9 +649,7 @@ void control_init(){
 
 	micromouse_state = RESET;
 
-	encoder_estimation.theta = 0;
-	encoder_estimation.x = 0;
-	encoder_estimation.y = 0;
+	maze_init_ff();
 
 }
 
@@ -657,6 +703,9 @@ void ctrlSwitchFxn(void) {
 	}
 	else{
 		micromouse_state = RESET;
+		if(restart_flag){
+			explore = 0;
+		}
 	}
 
 	GPIOIntClear(GPIO_PORTA_BASE, GPIO_PIN_1);

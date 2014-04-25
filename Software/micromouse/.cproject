@@ -99,7 +99,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="drivers/encoder_1.c|micromouse.cfg.REMOTE.4844.cfg|micromouse.cfg.LOCAL.4844.cfg|micromouse.cfg.BASE.4844.cfg|micromouse.cfg.BACKUP.4844.cfg" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="services/maze_solver2.c|services/maze_solver1.c|drivers/encoder_1.c|micromouse.cfg.REMOTE.4844.cfg|micromouse.cfg.LOCAL.4844.cfg|micromouse.cfg.BASE.4844.cfg|micromouse.cfg.BACKUP.4844.cfg" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

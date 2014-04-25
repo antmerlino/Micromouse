@@ -143,6 +143,15 @@ void front_poll(uint32_t * buf){
 	// Read ADC Value
 	ADCSequenceDataGet(ADC1_BASE, 1, buf);
 
+	buf[0] += ir_cal_vals.front_left_offset;
+	buf[1] += ir_cal_vals.front_right_offset;
+
+//	int len = sprintf(spf_buf, "LF: %i, RF: %i\r\n", *buf, *(buf+1));
+//	bluetooth_transmit(spf_buf, len);
+
+
+
+
 }
 
 #define CAL_LPF_VALS 5
@@ -151,6 +160,9 @@ void cal_center(side_ir_data_t * side_ir_data) {
 	// Get LPF Values for left front and right front
 	uint32_t avg_right_side = 0;
 	uint32_t avg_left_side = 0;
+
+	uint32_t avg_front_right = 0;
+	uint32_t avg_front_left = 0;
 
 	uint32_t adc_data[4];
 
@@ -165,10 +177,17 @@ void cal_center(side_ir_data_t * side_ir_data) {
 
 	for(i = 0; i < CAL_LPF_VALS; i++) {
 		front_poll(&adc_data[0]);
-		ir_cal_vals.front_center += AVG_DATA;
+		avg_front_left += adc_data[0];
+		avg_front_right += adc_data[1];
 	}
 
-	ir_cal_vals.front_center = ir_cal_vals.front_center/CAL_LPF_VALS;
+	avg_front_left /= CAL_LPF_VALS;
+	avg_front_right /= CAL_LPF_VALS;
+
+	ir_cal_vals.front_center = (avg_front_left + avg_front_right) / 2.0;
+
+	ir_cal_vals.front_left_offset = ir_cal_vals.front_center - avg_front_left;
+	ir_cal_vals.front_right_offset = ir_cal_vals.front_center - avg_front_right;
 }
 
 void diagonal_poll(uint32_t * buf){
@@ -398,82 +417,86 @@ void calibrate_front(){
 	// Poll once before loop
 	front_poll(&front_data[0]);
 
-//	// Square up the front before we calibrate the distance from the wall
-//	while( abs(front_data[0] - front_data[1]) >= FRONT_DIFF_THRESHOLD){
-//
-//		// If the front left is closer, we need to turn Clockwise (Right) slightly
-//		if (front_data[0] > front_data[1]){
-//
-//			update_motor(LEFT_MOTOR, CW, 100);
-//			update_motor(RIGHT_MOTOR, CW, 85);
-//
-//			while(front_data[0] > front_data[1]){
-//				front_poll(&front_data[0]);
-//			}
-//
-//			update_motor(LEFT_MOTOR, CCW, 0);
-//			update_motor(RIGHT_MOTOR, CCW, 0);
-//
-//		}
-//		// If the front right is closer, we need to turn Counter-Clockwise (Left) slightly
-//		else{
-//
-//			update_motor(LEFT_MOTOR, CCW, 100);
-//			update_motor(RIGHT_MOTOR, CCW, 85);
-//
-//			while(front_data[0] < front_data[1]){
-//				front_poll(&front_data[0]);
-//			}
-//
-//			update_motor(LEFT_MOTOR, CCW, 0);
-//			update_motor(RIGHT_MOTOR, CCW, 0);
-//
-//		}
-//
-//	}
+	// If we are too far away from the wall move forward slowly
+	if( FRONT_AVG <  ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
 
-	// Now that we are perpendicular to the wall, calibrate the distance
-	while( (FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD) || (FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD) ){
+		// Start moving slowly forward
+		update_motor(RIGHT_MOTOR, CCW, MOTOR_OFFSET_FRONTCAL);
+		update_motor(LEFT_MOTOR, CW, 100);
 
-		// If we are too far away from the wall move forward slowly
-		if( FRONT_AVG <=  ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
-
-			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CCW, 90);
-			update_motor(LEFT_MOTOR, CW, 100);
-
-			while(FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
-				front_poll(&front_data[0]);
-			}
-
-			// Turn the motors off
-			update_motor(RIGHT_MOTOR, CCW, 0);
-			update_motor(LEFT_MOTOR, CW, 0);
-
-		}
-		// If we are too close to the wall move backward slowly
-		else{
-
-			// Start moving slowly forward
-			update_motor(RIGHT_MOTOR, CW, 90);
-			update_motor(LEFT_MOTOR, CCW, 100);
-
-			while(FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD){
-				front_poll(&front_data[0]);
-			}
-
-			// Turn the motors off
-			update_motor(RIGHT_MOTOR, CCW, 0);
-			update_motor(LEFT_MOTOR, CW, 0);
-
+		while(FRONT_AVG < ir_cal_vals.front_center - AVG_FRONT_THRESHOLD){
+			front_poll(&front_data[0]);
 		}
 
-		// Poll again to get new data
-		front_poll(&front_data[0]);
+		// Turn the motors off
+		update_motor(RIGHT_MOTOR, CCW, 0);
+		update_motor(LEFT_MOTOR, CW, 0);
+
 	}
+	// If we are too close to the wall move backward slowly
+	else{
+
+		// Start moving slowly forward
+		update_motor(RIGHT_MOTOR, CW, MOTOR_OFFSET_FRONTCAL);
+		update_motor(LEFT_MOTOR, CCW, 100);
+
+		while(FRONT_AVG > ir_cal_vals.front_center + AVG_FRONT_THRESHOLD){
+			front_poll(&front_data[0]);
+		}
+
+		// Turn the motors off
+		update_motor(RIGHT_MOTOR, CCW, 0);
+		update_motor(LEFT_MOTOR, CW, 0);
+
+	}
+
 
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+}
+
+void square_front(void){
+
+		uint32_t front_data[4];
+
+		// Poll once before loop
+		front_poll(&front_data[0]);
+
+		// If the front left is closer, we need to turn Counter Clockwise (Left) slightly
+		if (front_data[0] > front_data[1]){
+
+			update_motor(LEFT_MOTOR, CCW, 75);
+			update_motor(RIGHT_MOTOR, CCW, 75);
+
+			while(front_data[0] > front_data[1]){
+				front_poll(&front_data[0]);
+			}
+
+			update_motor(LEFT_MOTOR, CCW, 0);
+			update_motor(RIGHT_MOTOR, CCW, 0);
+
+		}
+		// If the front right is closer, we need to turnClockwise (Right) slightly
+		else if(front_data[0] < front_data[1]){
+
+			update_motor(LEFT_MOTOR, CW, 75);
+			update_motor(RIGHT_MOTOR, CW, 75);
+
+			while(front_data[0] < front_data[1]){
+				front_poll(&front_data[0]);
+			}
+
+			update_motor(LEFT_MOTOR, CW, 0);
+			update_motor(RIGHT_MOTOR, CW, 0);
+
+		}
+
+		update_motor(LEFT_MOTOR, BRAKE, 500);
+		update_motor(RIGHT_MOTOR, BRAKE, 500);
+
+		Task_sleep(250);
+
 
 }
 
@@ -483,43 +506,35 @@ void calibrate_left(void){
 
 	side_poll(&side_data);
 
-	while( abs(side_data.left_back - side_data.left_front) >= LEFT_DIFF_THRESHOLD){
+	if (side_data.left_back > side_data.left_front){
 
-		if (side_data.left_back > side_data.left_front){
+		update_motor(LEFT_MOTOR, CCW, 100);
+		update_motor(RIGHT_MOTOR, CCW, 90);
 
-			update_motor(LEFT_MOTOR, CCW, 100);
-			update_motor(RIGHT_MOTOR, CCW, 90);
-
-			while(side_data.left_back > side_data.left_front){
-				side_poll(&side_data);
-			}
-
-			update_motor(LEFT_MOTOR, CCW, 0);
-			update_motor(RIGHT_MOTOR, CCW, 0);
-
-		}
-		else{
-
-			update_motor(LEFT_MOTOR, CW, 100);
-			update_motor(RIGHT_MOTOR, CW, 90);
-
-			while(side_data.left_back < side_data.left_front){
-				side_poll(&side_data);
-			}
-
-			update_motor(LEFT_MOTOR, CCW, 0);
-			update_motor(RIGHT_MOTOR, CCW, 0);
-
+		while(side_data.left_back > side_data.left_front){
+			side_poll(&side_data);
 		}
 
-		side_poll(&side_data);
+		update_motor(LEFT_MOTOR, CCW, 0);
+		update_motor(RIGHT_MOTOR, CCW, 0);
+
+	}
+	else{
+
+		update_motor(LEFT_MOTOR, CW, 100);
+		update_motor(RIGHT_MOTOR, CW, 90);
+
+		while(side_data.left_back < side_data.left_front){
+			side_poll(&side_data);
+		}
+
+		update_motor(LEFT_MOTOR, CCW, 0);
+		update_motor(RIGHT_MOTOR, CCW, 0);
 
 	}
 
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);
-
-	Task_sleep(250);
 
 }
 
@@ -530,38 +545,33 @@ void calibrate_right(void){
 
 	side_poll(&side_data);
 
-	while( abs(side_data.right_back - side_data.right_front) >= RIGHT_DIFF_THRESHOLD){
+	if (side_data.right_back > side_data.right_front){
 
-		if (side_data.right_back > side_data.right_front){
+		update_motor(LEFT_MOTOR, CW, 100);
+		update_motor(RIGHT_MOTOR, CW, 90);
 
-			update_motor(LEFT_MOTOR, CW, 100);
-			update_motor(RIGHT_MOTOR, CW, 90);
-
-			while(side_data.right_back > side_data.right_front){
-				side_poll(&side_data);
-			}
-
-			update_motor(LEFT_MOTOR, CW, 0);
-			update_motor(RIGHT_MOTOR, CW, 0);
-
-		}
-		else{
-
-			update_motor(LEFT_MOTOR, CCW, 100);
-			update_motor(RIGHT_MOTOR, CCW, 90);
-
-			while(side_data.right_back < side_data.right_front){
-				side_poll(&side_data);
-			}
-
-			update_motor(LEFT_MOTOR, CCW, 0);
-			update_motor(RIGHT_MOTOR, CCW, 0);
-
+		while(side_data.right_back > side_data.right_front){
+			side_poll(&side_data);
 		}
 
-		side_poll(&side_data);
+		update_motor(LEFT_MOTOR, CW, 0);
+		update_motor(RIGHT_MOTOR, CW, 0);
 
 	}
+	else{
+
+		update_motor(LEFT_MOTOR, CCW, 100);
+		update_motor(RIGHT_MOTOR, CCW, 90);
+
+		while(side_data.right_back < side_data.right_front){
+			side_poll(&side_data);
+		}
+
+		update_motor(LEFT_MOTOR, CCW, 0);
+		update_motor(RIGHT_MOTOR, CCW, 0);
+
+	}
+
 
 	update_motor(LEFT_MOTOR, BRAKE, 500);
 	update_motor(RIGHT_MOTOR, BRAKE, 500);

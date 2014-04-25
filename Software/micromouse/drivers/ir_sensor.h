@@ -8,22 +8,29 @@
 #define DIAG_LEFT_THRESHOLD 300
 #define DIAG_RIGHT_THRESHOLD 300
 
-#define AVG_FRONT_THRESHOLD 25
+#define AVG_FRONT_THRESHOLD 20
 
-#define FRONT_DIFF_THRESHOLD 30
-#define LEFT_DIFF_THRESHOLD 30
-#define RIGHT_DIFF_THRESHOLD 30
+#define FRONT_DIFF_THRESHOLD 20
+#define LEFT_DIFF_THRESHOLD 20
+#define RIGHT_DIFF_THRESHOLD 20
+
+#define MOTOR_OFFSET_FRONTCAL 80
 
 #define LF_OFFSET -57
 #define RF_OFFSET 180
 #define LB_OFFSET -45
 #define RB_OFFSET 20
 
+
 typedef struct {
 	int32_t side_center_left;
 	int32_t side_center_right;
 	int32_t front_center;
+	int32_t front_left_offset;
+	int32_t front_right_offset;
 } ir_cal_t;
+
+extern ir_cal_t ir_cal_vals;
 
 typedef union {
 
@@ -75,6 +82,7 @@ void update_ir_duty(char * value);
 void calibrate_front(void);
 void calibrate_left(void);
 void calibrate_right(void);
+void square_front(void);
 
 // UART Callback
 void stream_ir(char* val);

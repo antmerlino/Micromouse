@@ -8,7 +8,7 @@ int8_t nextPositionX=0,nextPositionY=0;
 int8_t initialPositionX=0, initialPositionY=0;
 int16_t rotation = 0;
 int16_t initialRotation=0;
-cNodeInfo_t dummyNode={16,255,0,-1,-1};
+cNodeInfo_t dummyNode={16,255,-1,-1};
 //Prototypes for private functions
 void maze_get_path(uint8_t startX, uint8_t startY, uint8_t endX, uint8_t endY);
 uint8_t maze_resolve_direction(int8_t nextX, int8_t nextY, int8_t currentX, int8_t currentY);
@@ -172,7 +172,6 @@ int8_t maze_next_direction_dfs(void)
 
 	static cNodeInfo_t* ffStack[xSize*ySize];
 	static int8_t neighborDist[4]={-1,-1,-1,-1};
-	static int8_t weightedNeighborDist[4]={-1,-1,-1,-1};
 	int8_t index=0;
 	int8_t maze_next_direction_ff(void)
 	{
@@ -184,10 +183,6 @@ int8_t maze_next_direction_dfs(void)
 		neighborDist[1]=-1;
 		neighborDist[2]=-1;
 		neighborDist[3]=-1;
-		weightedNeighborDist[0]=-1;
-		weightedNeighborDist[1]=-1;
-		weightedNeighborDist[2]=-1;
-		weightedNeighborDist[3]=-1;
 		//Push current Cell onto Stack
 		ffStack[index]=&nodes[X][Y].NodeInfo;
 		//Check if the mouse is on the final position
@@ -198,25 +193,21 @@ int8_t maze_next_direction_dfs(void)
 		if(X-1>=0){
 			if((Flags&1)==0){
 				neighborDist[0]=nodes[X-1][Y].NodeInfo.distance;
-				weightedNeighborDist[0]=nodes[X-1][Y].NodeInfo.distance+nodes[X-1][Y].NodeInfo.VisitedCount;
 			}
 		}
 		if(Y-1>=0){
 			if((Flags>>1&1)==0){
 				neighborDist[1]=nodes[X][Y-1].NodeInfo.distance;
-				weightedNeighborDist[1]=nodes[X][Y-1].NodeInfo.distance+nodes[X][Y-1].NodeInfo.VisitedCount;
 			}
 		}
 		if(X+1<xSize){
 			if((Flags>>2&1)==0){
 				neighborDist[2]=nodes[X+1][Y].NodeInfo.distance;
-				weightedNeighborDist[2]=nodes[X+1][Y].NodeInfo.distance+nodes[X+1][Y].NodeInfo.VisitedCount;
 			}
 		}
 		if(Y+1<ySize){
 			if((Flags>>3&1)==0){
 				neighborDist[3]=nodes[X][Y+1].NodeInfo.distance;
-				weightedNeighborDist[3]=nodes[X][Y+1].NodeInfo.distance+nodes[X][Y+1].NodeInfo.VisitedCount;
 
 			}
 		}
@@ -225,12 +216,12 @@ int8_t maze_next_direction_dfs(void)
 		uint8_t i=0;
 		for(i=0;i<4;i++)
 		{
-			if(weightedNeighborDist[i]<dist&&weightedNeighborDist[i]>-1){
-							dist=weightedNeighborDist[i];
-							choice=i;
-						}
+			if(neighborDist[i]<dist&&neighborDist[i]>-1){
+				dist=neighborDist[i];
+				choice=i;
+			}
 		}
-		dist=neighborDist[choice];
+
 		int8_t safety = 100;
 		//If there is an inconsistency, backtrack and fix distances
 		if(nodes[currentPositionX][currentPositionY].NodeInfo.distance<=neighborDist[choice])
@@ -336,7 +327,7 @@ int8_t maze_next_direction_dfs(void)
 		if((nodes[nextPositionX][nextPositionY].NodeInfo.Flags>>4&1)==0){
 			nodes[nextPositionX][nextPositionY].previous=&nodes[currentPositionX][currentPositionY].NodeInfo;
 		}
-		nodes[currentPositionX][currentPositionY].NodeInfo.VisitedCount+=1;
+
 		index++;
 		return maze_resolve_direction(nextPositionX,nextPositionY, currentPositionX, currentPositionY);
 	}
