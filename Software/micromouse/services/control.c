@@ -46,7 +46,7 @@ typedef struct straight_pid_params_t {
 }straight_pid_params_t;
 
 
-straight_pid_params_t straight_control_params = {2, 1.0, 0.0, 200};
+straight_pid_params_t straight_control_params = {4.0, 1.0, 2.0, 200};
 
 Semaphore_Handle drive_straight_sem_handle;
 Semaphore_Params drive_straight_sem_params;

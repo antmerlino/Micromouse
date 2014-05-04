@@ -11,7 +11,7 @@
 #define SETPOINT 0
 #define TURN_SPEED 125
 
-#define MOTOR_SPEED_OFFSET 7
+#define MOTOR_SPEED_OFFSET 5
 
 #define INITIAL_WALLS 0x0D
 
