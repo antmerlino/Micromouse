@@ -26,7 +26,7 @@ float pid_step(pid_controller_t *pid_handle, float stpt, float meas, float curr_
 	float I = pid_handle->ki*pid_handle->accum_error;
 
 	// Calculate Derivitive Term
-	float D = (curr_error-pid_handle->prev_error)/dt;
+	float D = pid_handle->kd*(curr_error-pid_handle->prev_error)/dt;
 
 	// Update struct
 	pid_handle->prev_error = curr_error;
